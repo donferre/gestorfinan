@@ -1,0 +1,22 @@
+<!DOCTYPE hibernate-configuration PUBLIC
+        "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+        "http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+    <session-factory>
+        <property name="hibernate.connection.driver_class">com.mysql.cj.jdbc.Driver</property>
+        <property name="hibernate.connection.url">jdbc:mysql://localhost:3306/gestionepro</property>
+        <property name="hibernate.connection.username">root</property>
+        <property name="hibernate.connection.password"></property>
+        <property name="hibernate.dialect">org.hibernate.dialect.MySQL8Dialect</property>
+        <property name="hibernate.show_sql">true</property>
+        <property name="hibernate.format_sql">true</property>
+        <property name="hibernate.hbm2ddl.auto">update</property>
+        <mapping class="com.italoweb.gestorfinan.model.Cliente"/>
+        <mapping class="com.italoweb.gestorfinan.model.Producto"/>
+        <mapping class="com.italoweb.gestorfinan.model.Usuario"/>
+        <mapping class="com.italoweb.gestorfinan.model.MedioPago"/>
+        <mapping class="com.italoweb.gestorfinan.model.Concepto"/>
+        <mapping class="com.italoweb.gestorfinan.model.Nota"/>
+        <mapping class="com.italoweb.gestorfinan.model.CategoriaNota"/>
+    </session-factory>
+</hibernate-configuration>

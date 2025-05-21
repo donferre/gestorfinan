@@ -1,0 +1,94 @@
+<?taglib uri="http://www.zkoss.org/dsp/web/core" prefix="c"?>
+<zk xmlns:h="http://www.zkoss.org/2005/zk/native"
+    xmlns:w="http://www.zkoss.org/2005/zk/client">
+<div id="win_productos" sclass="container-fluid" use="com.italoweb.gestorfinan.controller.ProductoController">
+    <style>
+        .div_list_productos{
+            height: calc(100vh - 260px);
+        }
+        @media (max-width: 768px) {
+            .z-window {
+                width: 100% !important;
+                left: 0 !important;
+                top: 50px !important; /* Ajusta según necesites */
+            }
+        }
+    </style>
+    
+	<div class="py-3 py-lg-4">
+       <div class="row">
+	       <div class="col-lg-6">
+	       	<label class="page-title mb-0" value="Productos"></label>
+	       </div>
+	       <div class="col-lg-6">
+	           <div class="d-none d-lg-block">
+		            <hlayout sclass="breadcrumb m-0 float-end">
+				        <label sclass="breadcrumb-item" value="Menu"/>
+				        <label sclass="breadcrumb-separator" value="›"/>
+				        <label sclass="breadcrumb-item active" value="Productos"/>
+				    </hlayout>
+	            </div>
+	    	</div>
+        </div>
+    </div>
+    
+    <div class="row">
+    	<div class="col-12">
+        	<div class="card">
+            	<div class="card-body">
+	            	<div class="white_box_tittle list_header">
+			        	<label class="page-title mb-0" value="Listado de Productos"></label>
+                        <div class="box_right d-flex lms_block">
+                        	<div class="serach_field_2">
+                            	<div class="search_inner">
+                                	<div class="search_field">
+                                    	<textbox id="text_filtrar_productos" class="form-control" placeholder="Buscar contenido aqui..." 
+                                    	onChanging="win_productos.filtrarListProductos(event.value)"/>
+                                  	</div>
+                                    <h:button type="submit"> <h:i class="fa fa-search"></h:i> </h:button>
+                                 </div>
+                             </div>
+                             <div class="ms-2">
+                                 <a class="btn_1" onClick="win_productos.cargarWinProductoForm(null)" iconSclass="z-icon-plus-circle">Crear</a>
+                             </div>
+                  		</div>
+                  	</div>
+                  	<div class="div_list_productos">
+	                 	<listbox id="listbox_productos" nonselectableTags="*" emptyMessage="No hay Registros" vflex="1">
+	                    	<listhead>
+                            	<listheader label="Id" sort="auto"/>
+                            	<listheader label="Nombre" sort="auto"/>
+                            	<listheader label="Precio" sort="auto"/>
+                            	<listheader />
+	                     	</listhead>
+	                 	</listbox>
+		           	</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <window id="win_productos_form" title="Producto" closable="true" width="30%" visible="false"
+            onClose="win_productos_form.setVisible(false); event.stopPropagation();">
+        <div class="row justify-content-center">
+        	<div class="z-grid-border-less">
+                <div class="mb-3">
+                    <label value="Nombre:" class="infodigg-grid-title"/>
+                    <textbox id="text_nombre" class="form-control"/>
+                </div>
+                <div class="mb-3">
+                    <label value="Precio:" class="infodigg-grid-title"/>
+                    <decimalbox id="debx_precio" class="form-control"/>
+                </div>
+                <div class="mb-3" id="div_emails">
+                    <label value="Emails:" class="infodigg-grid-title"/>
+                </div>
+                <div sclass="text-end">
+                    <button class="btn btn-primary" iconSclass="fa fa-floppy-o" label="Guardar"
+                            onClick="win_productos.guardarWinProductoForm();"/>
+                </div>
+            </div>
+        </div>
+    </window>
+</div>
+</zk>

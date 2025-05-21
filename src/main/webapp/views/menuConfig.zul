@@ -1,0 +1,91 @@
+<?taglib uri="http://www.zkoss.org/dsp/web/core" prefix="c"?>
+<zk xmlns:h="http://www.zkoss.org/2005/zk/native"
+    xmlns:w="http://www.zkoss.org/2005/zk/client">
+    <div id="win_menu" sclass="container-fluid" use="com.italoweb.gestorfinan.controller.MenuController">
+        <div class="row">
+            <!-- Bloque izquierdo: sidebar de navegación -->
+            <div id="sidebarNav" class="col-md-4 border-end pe-3">
+            </div>
+
+            <!-- Bloque derecho: configuración del menú -->
+            <div class="col-md-8 ps-3">
+                <div class="mb-3 d-flex justify-content-between align-items-center">
+                    <label sclass="h5" value="Configuración del Menu"></label>
+                    <button sclass="btn btn-success" label="Crear Menu" onClick="win_menu.crearMenuPrincipal()"></button>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Id</label>
+                    <textbox sclass="form-control" id="text_id" readonly="true"/>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Nombre del menú</label>
+                    <textbox sclass="form-control" id="text_nombre"/>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">URL</label>
+                    <textbox sclass="form-control" id="text_url"/>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Ícono</label>
+                    <textbox sclass="form-control" id="text_icono"/>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Orden</label>
+                    <intbox sclass="form-control" id="text_orden"/>
+                </div>
+                
+                <div class="mb-3" id="div_estado">
+                    <label class="form-label">Estado</label>
+                </div>
+
+                <button class="btn btn-primary" id="btn_guardar">Guardar</button>
+            </div>
+        </div>
+
+        <window id="win_menu_form" title="Crear Menu" closable="true" width="30%" visible="false"
+                onClose="win_menu_form.setVisible(false); event.stopPropagation();">
+            <label id="label_padre" sclass="h6"></label>
+            <separator></separator>
+            <div class="row justify-content-center">
+                <div class="z-grid-border-less">
+                    <div class="mb-3">
+                        <label value="Nombre:" class="infodigg-grid-title"/>
+                        <textbox id="text_nombre_win" class="form-control" />
+                    </div>
+                    <div class="mb-3">
+                        <label value="Url:" class="infodigg-grid-title"/>
+                        <textbox id="text_url_win" class="form-control" />
+                    </div>
+                    <div class="mb-3">
+                        <label value="Icono:" class="infodigg-grid-title"/>
+                        <textbox id="text_icono_win" class="form-control" />
+                    </div>
+                    <div sclass="text-end">
+                        <button class="btn btn-primary" iconSclass="fa fa-floppy-o" label="Guardar"
+                                onClick="win_menu.guardarWinMenu()"/>
+                    </div>
+                </div>
+            </div>
+        </window>
+    </div>
+    <script>
+        zk.afterMount(function() {
+            document.querySelectorAll(".sidebar-link-config").forEach(link => {
+                link.addEventListener("click", function(event) {
+                event.preventDefault();
+                // Encuentra el div siguiente que contiene el submenú
+                const submenu = this.parentElement.querySelector(".sidebar-dropdown-config");
+
+                if (submenu) {
+                    submenu.classList.toggle("collapse"); // Alterna la clase
+                }
+                });
+            });
+        });
+    </script>
+</zk>
