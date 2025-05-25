@@ -67,6 +67,8 @@
 								vflex="1">
 								<listhead>
 									<listheader label="Id" sort="auto" />
+									<listheader label="Cliente"
+										sort="auto" />
 									<listheader label="Concepto"
 										sort="auto" />
 									<listheader label="Medio de Pago"
@@ -92,13 +94,19 @@
 			<div class="row justify-content-center">
 				<div class="z-grid-border-less">
 					<div class="mb-3">
+						<label value="Cliente"
+							class="infodigg-grid-title" />
+						<combobox id="comb_cliente" width="100%"
+							onChanging="win_ingresos.filtrarCliente(event.value)" />
+					</div>
+					<div class="mb-3" visible="false">
 						<label value="Concepto:"
 							class="infodigg-grid-title" />
 						<combobox id="comb_concepto" width="100%"
 							onChanging="win_ingresos.filtrarComboConcepto(event.value)" />
 					</div>
 					<div class="mb-3">
-						<label value="Concepto:"
+						<label value="Medio de Pago:"
 							class="infodigg-grid-title" />
 						<combobox id="comb_medio_pago" width="100%"
 							onChanging="win_ingresos.filtrarComboMedioPago(event.value)" />
@@ -106,10 +114,10 @@
 					<div class="mb-3">
 						<label value="Valor"
 							class="infodigg-grid-title" />
-						<decimalbox id="debx_valor"
-							class="form-control" />
+						<decimalbox id="debx_valor" format="#,###.00"
+							locale="es" class="form-control" />
 					</div>
-					<div class="mb-3">
+					<div class="mb-3" visible="false">
 						<label value="Fecha:"
 							class="infodigg-grid-title" />
 						<datebox id="dbx_fecha" class="form-control" />
@@ -123,7 +131,7 @@
 					<div sclass="text-end">
 						<button class="btn btn-primary"
 							iconSclass="fa fa-floppy-o" label="Guardar"
-							onClick="win_ingresos.guardarWinProductoForm();" />
+							onClick="win_ingresos.guardarWinIngresoForm();" />
 					</div>
 				</div>
 			</div>

@@ -16,7 +16,7 @@ public class MovimientoDAO  extends GenericDAOImpl<Movimiento, Long> {
     
     public List<Movimiento> findByTipoMovimiento(TipoMovimiento tipo) {
 		try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-			String hql = "FROM movimiento c WHERE c.tipoMovimiento = :tipoMovimiento";
+			String hql = "FROM Movimiento c WHERE c.tipoMovimiento = :tipoMovimiento";
 			Query<Movimiento> query = session.createQuery(hql, Movimiento.class);
 			query.setParameter("tipoMovimiento", tipo);
 			return query.getResultList();

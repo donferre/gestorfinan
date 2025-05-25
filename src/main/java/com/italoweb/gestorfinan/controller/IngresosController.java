@@ -1,7 +1,6 @@
 package com.italoweb.gestorfinan.controller;
 
 import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -22,14 +21,17 @@ import org.zkoss.zul.Listitem;
 import org.zkoss.zul.Textbox;
 import org.zkoss.zul.Window;
 
+import com.italoweb.gestorfinan.model.Cliente;
 import com.italoweb.gestorfinan.model.Concepto;
 import com.italoweb.gestorfinan.model.MedioPago;
 import com.italoweb.gestorfinan.model.Movimiento;
 import com.italoweb.gestorfinan.model.TipoMovimiento;
+import com.italoweb.gestorfinan.repository.ClienteDAO;
 import com.italoweb.gestorfinan.repository.ConceptoDAO;
 import com.italoweb.gestorfinan.repository.MedioPagoDAO;
 import com.italoweb.gestorfinan.repository.MovimientoDAO;
 import com.italoweb.gestorfinan.util.ComponentsUtil;
+import com.italoweb.gestorfinan.util.DialogUtil;
 import com.italoweb.gestorfinan.util.FormatoUtil;
 
 public class IngresosController extends Window implements AfterCompose {
@@ -40,19 +42,18 @@ public class IngresosController extends Window implements AfterCompose {
 	private Window win_ingresos_form;
 	private Combobox comb_concepto;
 	private Combobox comb_medio_pago;
+	private Combobox comb_cliente;
 	private Decimalbox debx_valor;
 	private Textbox text_descripcion;
 	private Datebox dbx_fecha;
-	private MovimientoDAO movimientoDAO;
-	private ConceptoDAO conceptoDAO;
-	private MedioPagoDAO medioPagoDAO;
+	private final MovimientoDAO movimientoDAO = new MovimientoDAO();
+	private final ClienteDAO clienteDAO = new ClienteDAO();
+	private final ConceptoDAO conceptoDAO = new ConceptoDAO();
+	private final MedioPagoDAO medioPagoDAO = new MedioPagoDAO();
 
 	@Override
 	public void afterCompose() {
 		ComponentsUtil.connectVariablesController(this);
-		this.movimientoDAO = new MovimientoDAO();
-		this.conceptoDAO = new ConceptoDAO();
-		this.medioPagoDAO = new MedioPagoDAO();
 		this.cargarComponentes();
 		this.cargarListaIngresos();
 		this.isMobile();
@@ -74,17 +75,24 @@ public class IngresosController extends Window implements AfterCompose {
 		}
 	}
 
+	public void cargarClientes() {
+		this.comb_cliente.setAutocomplete(false);
+		List<Cliente> listaCliente = this.clienteDAO.findAll();
+		for (Cliente cliente : listaCliente) {
+			this.comb_cliente.appendChild(ComponentsUtil.getComboitem(cliente.getNombre(), null, cliente));
+		}
+	}
+
 	public void cargarComponentes() {
 		cargarConceptos();
 		cargarMediosPago();
+		cargarClientes();
 	}
 
 	public void cargarListaIngresos() {
 		this.text_filtrar_ingresos.setValue("");
 		this.listbox_ingresos.getItems().clear();
-		for (Movimiento ingresos : this.movimientoDAO.findByTipoMovimiento(TipoMovimiento.INGRESOS)) {
-			this.crearListitem(ingresos);
-		}
+		movimientoDAO.findByTipoMovimiento(TipoMovimiento.INGRESOS).forEach(this::crearListitem);
 	}
 
 	public void isMobile() {
@@ -109,9 +117,9 @@ public class IngresosController extends Window implements AfterCompose {
 	}
 
 	private void actualizarListitem(Movimiento ingresos, Listitem listitem) {
-		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 		listitem.getChildren().clear();
 		listitem.appendChild(new Listcell(ingresos.getId().toString()));
+		listitem.appendChild(new Listcell(ingresos.getCliente().getNombre().toString()));
 		listitem.appendChild(new Listcell(ingresos.getConcepto().getNombre().toString()));
 		listitem.appendChild(new Listcell(ingresos.getMedioPago().getNombre().toString()));
 		listitem.appendChild(new Listcell(FormatoUtil.formatearMoneda(ingresos.getValor())));
@@ -142,19 +150,27 @@ public class IngresosController extends Window implements AfterCompose {
 	}
 
 	private void eliminarProducto(Movimiento ingresos) {
-		this.movimientoDAO.delete(ingresos);
-		this.cargarListaIngresos();
+		DialogUtil.showConfirmDialog("¿Está seguro de que desea eliminar este registro?", "Confirmación")
+				.thenAccept(confirmed -> {
+					if (confirmed) {
+						this.movimientoDAO.delete(ingresos);
+						this.cargarListaIngresos();
+						DialogUtil.showShortMessage("success", "Ingreso Eliminado Exitosamente");
+					}
+				});
 	}
 
 	public void cargarWinIngresosForm(Movimiento ingresos) {
-		this.debx_valor.setValue(new BigDecimal(0));
+		this.comb_cliente.setSelectedItem(null);
 		this.comb_concepto.setSelectedIndex(0);
 		this.comb_medio_pago.setSelectedIndex(0);
+		this.debx_valor.setValue(new BigDecimal(0));
 		this.dbx_fecha.setValue(new Date());
 		this.text_descripcion.setValue("");
 		if (ingresos != null) {
-			ComponentsUtil.setComboboxValue(this.comb_concepto, ingresos.getConcepto().getId());
-			ComponentsUtil.setComboboxValue(this.comb_medio_pago, ingresos.getMedioPago().getId());
+			ComponentsUtil.setComboboxValue(this.comb_cliente, ingresos.getCliente());
+			ComponentsUtil.setComboboxValue(this.comb_concepto, ingresos.getConcepto());
+			ComponentsUtil.setComboboxValue(this.comb_medio_pago, ingresos.getMedioPago());
 			this.debx_valor.setValue(ingresos.getValor());
 			this.dbx_fecha.setValue(ingresos.getFecha());
 			this.text_descripcion.setValue(ingresos.getDescripcion());
@@ -171,6 +187,10 @@ public class IngresosController extends Window implements AfterCompose {
 		filtrarCombo(this.comb_medio_pago, filter);
 	}
 
+	public void filtrarCliente(String filter) {
+		filtrarCombo(this.comb_medio_pago, filter);
+	}
+
 	public void filtrarCombo(Combobox combo, String filter) {
 		filter = filter.trim().toUpperCase();
 		for (Comboitem comboItem : combo.getItems()) {
@@ -179,32 +199,68 @@ public class IngresosController extends Window implements AfterCompose {
 		}
 	}
 
-	public void guardarWinProductoForm() {
-		Concepto concepto = this.comb_concepto.getSelectedItem().getValue();
-		MedioPago medioPago = this.comb_medio_pago.getSelectedItem().getValue();
-		BigDecimal valor = this.debx_valor.getValue();
-		Date fecha = this.dbx_fecha.getValue();
-		String descripcion = this.text_descripcion.getValue().trim();
-		if (concepto != null && valor != null) {
-			Movimiento ingresos = (Movimiento) this.win_ingresos_form.getAttribute("INGRESOS");
-			if (ingresos == null) {
-				ingresos = new Movimiento();
-				ingresos.setConcepto(concepto);
-				ingresos.setMedioPago(medioPago);
-				ingresos.setValor(valor);
-				ingresos.setFecha(fecha);
-				ingresos.setDescripcion(descripcion);
-				this.movimientoDAO.save(ingresos);
-			} else {
-				ingresos.setConcepto(concepto);
-				ingresos.setMedioPago(medioPago);
-				ingresos.setValor(valor);
-				ingresos.setFecha(fecha);
-				ingresos.setDescripcion(descripcion);
-				this.movimientoDAO.update(ingresos);
-			}
-			this.cargarListaIngresos();
-			this.win_ingresos_form.setVisible(false);
+	public void guardarWinIngresoForm() {
+		Cliente cliente = comb_cliente.getSelectedItem() != null ? comb_cliente.getSelectedItem().getValue() : null;
+		Concepto concepto = comb_concepto.getSelectedItem() != null ? comb_concepto.getSelectedItem().getValue() : null;
+		MedioPago medioPago = comb_medio_pago.getSelectedItem() != null ? comb_medio_pago.getSelectedItem().getValue()
+				: null;
+		BigDecimal valor = debx_valor.getValue();
+		Date fecha = dbx_fecha.getValue();
+		String descripcion = text_descripcion.getValue().trim();
+		TipoMovimiento tipoMovimiento = TipoMovimiento.INGRESOS;
+		String mensaje = "Ingreso guardado exitosamente";
+		if (cliente == null) {
+			DialogUtil.showError("El Cliente es obligatorio");
+			return;
 		}
+
+		if (concepto == null) {
+			DialogUtil.showError("El Concepto es obligatorio");
+			return;
+		}
+
+		if (medioPago == null) {
+			DialogUtil.showError("El Medio de Pago es obligatorio");
+			return;
+		}
+
+		if (valor == null) {
+			DialogUtil.showError("El Valor es obligatorio");
+			return;
+		}
+
+		if (fecha == null) {
+			DialogUtil.showError("La Fecha es obligatoria");
+			return;
+		}
+
+		Movimiento ingresos = (Movimiento) win_ingresos_form.getAttribute("INGRESOS");
+
+		if (ingresos == null) {
+			ingresos = new Movimiento();
+			ingresos.setCliente(cliente);
+			ingresos.setConcepto(concepto);
+			ingresos.setMedioPago(medioPago);
+			ingresos.setTipoMovimiento(tipoMovimiento);
+			ingresos.setValor(valor);
+			ingresos.setFecha(fecha);
+			ingresos.setDescripcion(descripcion);
+			movimientoDAO.save(ingresos);
+		} else {
+			ingresos.setCliente(cliente);
+			ingresos.setConcepto(concepto);
+			ingresos.setMedioPago(medioPago);
+			ingresos.setTipoMovimiento(tipoMovimiento);
+			ingresos.setValor(valor);
+			ingresos.setFecha(fecha);
+			ingresos.setDescripcion(descripcion);
+			movimientoDAO.update(ingresos);
+			mensaje = "Ingreso editado exitosamente";
+		}
+
+		cargarListaIngresos();
+		win_ingresos_form.setVisible(false);
+		DialogUtil.showShortMessage("success", mensaje);
 	}
+
 }
