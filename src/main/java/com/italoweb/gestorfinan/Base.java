@@ -7,6 +7,7 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
+import java.util.Objects;
 
 import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.Executions;
@@ -318,7 +319,17 @@ public class Base extends Window implements AfterCompose {
     private void mostrarPreview(byte[] data) {
         String base64 = "data:image/jpeg;base64," +
                 Base64.getEncoder().encodeToString(data);
+        AparienciaManager aparienciaManager = new AparienciaManager();
+        List<Apariencia> apariencia = aparienciaManager.getApariencia();
+        String widthLogo = "100px";
+        if (apariencia.size() > 0) {
+        	int size = apariencia.get(0).getSizeLogo();
+			if (Objects.nonNull(size)) {
+				widthLogo = size+"px";
+			}
+		}
         this.logo_app.setSrc(base64);
+        this.logo_app.setWidth(widthLogo);
     }
 
     private void cargarLogoActual() {

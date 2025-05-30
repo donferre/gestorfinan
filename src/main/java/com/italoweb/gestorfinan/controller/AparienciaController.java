@@ -14,6 +14,7 @@ import org.zkoss.zk.ui.event.UploadEvent;
 import org.zkoss.zk.ui.ext.AfterCompose;
 import org.zkoss.zul.Fileupload;
 import org.zkoss.zul.Image;
+import org.zkoss.zul.Intbox;
 import org.zkoss.zul.Textbox;
 import org.zkoss.zul.Window;
 
@@ -30,6 +31,7 @@ public class AparienciaController extends Window implements AfterCompose {
     private AparienciaManager manager;
     private Image logoPreview;
     private Fileupload fileUploadLogo;
+    private Intbox logoSize;
 
     // Directorio en 'webapp' para los archivos accesibles
     private static final String LOGO_FILENAME = "logo_app.jpg";
@@ -114,6 +116,7 @@ public class AparienciaController extends Window implements AfterCompose {
                 this.name.setValue(apariencia.get(0).getName());
                 this.description.setValue(apariencia.get(0).getDescription());
                 this.logo.setValue(apariencia.get(0).getLogo());
+                this.logoSize.setValue(apariencia.get(0).getSizeLogo());
             }
     }
 
@@ -133,6 +136,7 @@ public class AparienciaController extends Window implements AfterCompose {
         String name = this.name.getValue().trim();
         String desc = this.description.getValue().trim();
         String logo = this.logo.getValue().trim();
+        int logoSize = this.logoSize.getValue();
 
         if (StringUtils.isBlank(name)) {
             DialogUtil.showError("El campo nombre es obligatorio");
@@ -149,6 +153,7 @@ public class AparienciaController extends Window implements AfterCompose {
         apariencia.setName(name);
         apariencia.setDescription(desc);
         apariencia.setLogo(logo);
+        apariencia.setSizeLogo(logoSize);
         if (listapariencia.size() > 0){
             listapariencia.set(0 , apariencia);
         }else {
