@@ -19,6 +19,7 @@ import org.zkoss.zul.Window;
 
 import com.italoweb.gestorfinan.config.Apariencia;
 import com.italoweb.gestorfinan.config.AparienciaManager;
+import com.italoweb.gestorfinan.util.AppProperties;
 import com.italoweb.gestorfinan.util.ComponentsUtil;
 import com.italoweb.gestorfinan.util.DialogUtil;
 
@@ -31,7 +32,7 @@ public class AparienciaController extends Window implements AfterCompose {
     private Fileupload fileUploadLogo;
 
     // Directorio en 'webapp' para los archivos accesibles
-    private static final String LOGO_DIR = System.getProperty("user.home") + "/gestorepro/config/images";
+    private static final String LOGO_DIR = AppProperties.get("logo.dir");
     private static final String LOGO_FILENAME = "logo_app.jpg";
 
     @Override

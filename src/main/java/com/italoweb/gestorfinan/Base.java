@@ -34,6 +34,7 @@ import com.italoweb.gestorfinan.model.Usuario;
 import com.italoweb.gestorfinan.navigation.EstadoMenu;
 import com.italoweb.gestorfinan.navigation.MenuItem;
 import com.italoweb.gestorfinan.navigation.NavigationMdel;
+import com.italoweb.gestorfinan.util.AppProperties;
 import com.italoweb.gestorfinan.util.HEXUtil;
 
 public class Base extends Window implements AfterCompose {
@@ -46,7 +47,7 @@ public class Base extends Window implements AfterCompose {
     private A nav_toggle;
     private Div sidebar;
     private Image logo_app;
-    private static final String LOGO_DIR = System.getProperty("user.home") + "/gestorfinan/config/images";
+    private static final String LOGO_DIR = AppProperties.get("logo.dir");
     private static final String LOGO_FILENAME = "logo_app.jpg";
 
     @Override
