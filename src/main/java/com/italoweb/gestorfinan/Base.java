@@ -47,7 +47,7 @@ public class Base extends Window implements AfterCompose {
     private A nav_toggle;
     private Div sidebar;
     private Image logo_app;
-    private static final String LOGO_DIR = AppProperties.get("logo.dir");
+    private static final String LOGO_DIR = AppProperties.get("app.src").concat("/config/images");
     private static final String LOGO_FILENAME = "logo_app.jpg";
 
     @Override

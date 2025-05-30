@@ -3,7 +3,6 @@ package com.italoweb.gestorfinan.controller;
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 
 import org.zkoss.zk.ui.Executions;
 import org.zkoss.zk.ui.event.Events;
@@ -133,8 +132,6 @@ public class ProductoController extends Window implements AfterCompose {
     public void guardarWinProductoForm() {
         String nombre = this.text_nombre.getValue().trim();
         BigDecimal precio = this.debx_precio.getValue();
-        Set<String> emails = this.chosenbox.getSelectedItems();
-        String text = "test";
         if(nombre != null) {
             if(precio != null) {
                 Producto producto = (Producto) this.win_productos_form.getAttribute("PRODUCTO");
