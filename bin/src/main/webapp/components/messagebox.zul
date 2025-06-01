@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<window use="com.italoweb.gestorfinan.components.MessageboxController" xmlns:w="client" contentSclass="infodigg-messagebox-content">
+	<style>
+		.infodigg-messagebox-content{
+			padding: 0;
+			max-width: 480px;
+		}
+		@media (min-width: 1280px) {
+			.infodigg-messagebox-content{
+				width: 480px;
+			}
+		}
+		.z-messagebox-window-content{
+			padding: 15px; 
+			text-align: center;
+		}
+		.z-messagebox-window-content button{
+			width: 80px;
+		}
+		.z-messagebox-window-content .icon-question{
+			color: #428bca;
+		}
+		.z-messagebox-window-content .icon-information{
+			color: #5cb85c;
+		}
+		.z-messagebox-window-content .icon-error{
+			color: #d9534f;
+		}
+		.z-messagebox-window-content .icon-exclamation{
+			color: #f0ad4e;
+		    font-size: 76px!important;
+		    border-radius: 50%;
+		    border: 3px solid #f0ad4e;
+		    width: 82px;
+		    display: block;
+		    height: 82px;
+		    line-height: 62px;
+		    margin: 10px auto;
+		}
+
+	</style>
+	<custom-attributes window.icon="${arg.icon}"/>
+	<div class="z-messagebox-window-content">
+		<label id="span_icon" zclass="none" style="font-size: 100px;opacity: 0.8;"/>
+		<separator spacing="15px"/>
+		<html content="${arg.message}" style="font-size: 16px;"/>
+		<separator spacing="15px"/>
+		<hlayout id="buttons" spacing="15px" class="text-center"/>
+	</div>
+</window>

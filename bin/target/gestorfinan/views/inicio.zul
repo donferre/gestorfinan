@@ -1,0 +1,11 @@
+<zk xmlns:n="native">
+    <window width="100%" height="100%">
+        <div class="container-fluid">
+			<n:h1 class="card-title text-danger display-4">Inicio</n:h1>
+			<n:p>La aplicación es una solución web empresarial desarrollada en Java utilizando el framework ZK, 
+			diseñada para optimizar y automatizar las operaciones internas de una empresa o profesional independiente.
+			Esta plataforma integra una interfaz de usuario rica e interactiva con una arquitectura robusta de backend, 
+			permitiendo gestionar eficientemente procesos administrativos, operativos y de seguimiento.</n:p>
+        </div>
+    </window>
+</zk>

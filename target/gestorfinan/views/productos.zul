@@ -1,0 +1,222 @@
+<?taglib uri="http://www.zkoss.org/dsp/web/core" prefix="c"?>
+<zk xmlns:h="http://www.zkoss.org/2005/zk/native"
+	xmlns:w="http://www.zkoss.org/2005/zk/client">
+	<div id="win_productos" sclass="container-fluid"
+		use="com.italoweb.gestorfinan.controller.ProductoController">
+		<style>
+			.div_list_productos {
+			 height: calc(100vh - 260px);
+			 overflow: hidden;
+			 overflow-x: auto;
+			 overflow-y: auto; }
+
+			.z-listheader { min-width: 150px; max-width: 150px; width:
+			150px; white-space: nowrap; font-size: 8px; /* Tamaño de
+			letra ajustado */ }
+
+			.z-listcell { min-width: 150px; max-width: 150px; width:
+			150px; overflow: hidden; text-overflow: ellipsis; }
+		</style>
+
+		<div class="py-3 py-lg-4">
+			<div class="row">
+				<div class="col-lg-6">
+					<label class="page-title mb-0" value="Productos"></label>
+				</div>
+				<div class="col-lg-6">
+					<div class="d-none d-lg-block">
+						<hlayout sclass="breadcrumb m-0 float-end">
+							<label sclass="breadcrumb-item"
+								value="Menu" />
+							<label sclass="breadcrumb-separator"
+								value="›" />
+							<label sclass="breadcrumb-item active"
+								value="Productos" />
+						</hlayout>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col-12">
+				<div class="card">
+					<div class="card-body">
+						<div class="white_box_tittle list_header">
+							<label class="page-title mb-0"
+								value="Listado de Productos">
+							</label>
+							<div class="box_right d-flex lms_block">
+								<div class="serach_field_2">
+									<div class="search_inner">
+										<div class="search_field">
+											<textbox
+												id="text_filtrar_productos" class="form-control"
+												placeholder="Buscar contenido aqui..."
+												onChanging="win_productos.filtrarListProductos(event.value)" />
+										</div>
+										<h:button type="submit">
+											<h:i class="fa fa-search"></h:i>
+										</h:button>
+									</div>
+								</div>
+								<div class="ms-2">
+									<a class="btn_1"
+										onClick="win_productos.cargarWinProductoForm(null)"
+										iconSclass="z-icon-plus-circle">
+										Crear
+									</a>
+								</div>
+							</div>
+						</div>
+						<div class="div_list_productos">
+							<listbox id="listbox_productos"
+								nonselectableTags="*" emptyMessage="No hay Registros">
+
+								<listhead>
+									<listheader label="Código"
+										sort="auto" />
+									<listheader label="Descripción"
+										sort="auto" />
+									<listheader label="Unidad Compra"
+										sort="auto" />
+									<listheader label="Inventario"
+										sort="auto" />
+									<listheader label="Precio Venta"
+										sort="auto" />
+									<listheader label="Precio Compra"
+										sort="auto" />
+									<listheader label="Descuento (%)"
+										sort="auto" />
+									<listheader label="Impuesto (%)"
+										sort="auto" />
+									<listheader label="Categoría"
+										sort="auto" />
+									<listheader label="Stock Mínimo"
+										sort="auto" />
+									<listheader label="Marca"
+										sort="auto" />
+									<listheader label="Ubicación"
+										sort="auto" />
+									<listheader label="Acciones" />
+								</listhead>
+							</listbox>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<window id="win_productos_form" title="Producto" closable="true"
+			width="85%" height="60%" visible="false"
+			onClose="win_productos_form.setVisible(false); event.stopPropagation();">
+			<div class="row justify-content-center">
+				<div class="z-grid-border-less">
+					<div class="row">
+						<div
+							class="col-md-3 mb-3 d-flex align-items-center">
+							<label value="Código:"
+								class="infodigg-grid-title me-2" style="width: 40%" />
+							<textbox id="text_codigo"
+								class="form-control" style="width: 60%" />
+						</div>
+						<div
+							class="col-md-3 mb-3 d-flex align-items-center">
+							<label value="Descripción:"
+								class="infodigg-grid-title me-2" style="width: 40%" />
+							<textbox id="text_descripcion"
+								class="form-control" style="width: 60%" />
+						</div>
+						<div
+							class="col-md-3 mb-3 d-flex align-items-center">
+							<label value="Unidad de Compra:"
+								class="infodigg-grid-title me-2" style="width: 40%" />
+							<combobox id="comb_unidad_compra"
+								width="100%"
+								onChanging="win_productos.filtrarUnidadCompra(event.value)"
+								style="width: 60%" />
+						</div>
+						<div
+							class="col-md-3 mb-3 d-flex align-items-center">
+							<label value="Inventario:"
+								class="infodigg-grid-title me-2" style="width: 40%" />
+							<intbox id="int_inventario"
+								class="form-control" style="width: 60%" />
+						</div>
+						<div
+							class="col-md-3 mb-3 d-flex align-items-center">
+							<label value="Precio Venta:"
+								class="infodigg-grid-title me-2" style="width: 40%" />
+							<decimalbox id="debx_precio_venta"
+								class="form-control" style="width: 60%" />
+						</div>
+						<div
+							class="col-md-3 mb-3 d-flex align-items-center">
+							<label value="Precio Compra:"
+								class="infodigg-grid-title me-2" style="width: 40%" />
+							<decimalbox id="debx_precio_compra"
+								class="form-control" style="width: 60%" />
+						</div>
+						<div
+							class="col-md-3 mb-3 d-flex align-items-center">
+							<label value="Descuento (%):"
+								class="infodigg-grid-title me-2" style="width: 40%" />
+							<decimalbox id="debx_porcentaje_descuento"
+								class="form-control" style="width: 60%" />
+						</div>
+						<div
+							class="col-md-3 mb-3 d-flex align-items-center">
+							<label value="Impuesto (%):"
+								class="infodigg-grid-title me-2" style="width: 40%" />
+							<decimalbox id="debx_porcentaje_impuesto"
+								class="form-control" style="width: 60%" />
+						</div>
+						<div
+							class="col-md-3 mb-3 d-flex align-items-center">
+							<label value="Impuesto:"
+								class="infodigg-grid-title me-2" style="width: 40%" />
+							<combobox id="comb_impuesto" width="100%"
+								onChanging="win_productos.filtrarComboImpuesto(event.value)"
+								style="width: 60%" />
+						</div>
+						<div
+							class="col-md-3 mb-3 d-flex align-items-center">
+							<label value="Categoría:"
+								class="infodigg-grid-title me-2" style="width: 40%" />
+							<combobox id="comb_categoria" width="100%"
+								onChanging="win_productos.filtrarComboCategoria(event.value)"
+								style="width: 60%" />
+						</div>
+						<div
+							class="col-md-3 mb-3 d-flex align-items-center">
+							<label value="Stock Mínimo:"
+								class="infodigg-grid-title me-2" style="width: 40%" />
+							<intbox id="int_stock_minimo"
+								class="form-control" style="width: 60%" />
+						</div>
+						<div
+							class="col-md-3 mb-3 d-flex align-items-center">
+							<label value="Marca:"
+								class="infodigg-grid-title me-2" style="width: 40%" />
+							<textbox id="text_marca"
+								class="form-control" style="width: 60%" />
+						</div>
+						<div
+							class="col-md-3 mb-3 d-flex align-items-center">
+							<label value="Ubicación:"
+								class="infodigg-grid-title me-2" style="width: 40%" />
+							<textbox id="text_ubicacion"
+								class="form-control" style="width: 60%" />
+						</div>
+					</div>
+					<div sclass="text-end mt-3">
+						<button class="btn btn-primary"
+							iconSclass="fa fa-floppy-o" label="Guardar"
+							onClick="win_productos.guardarWinProductoForm();" />
+					</div>
+				</div>
+			</div>
+		</window>
+
+	</div>
+</zk>

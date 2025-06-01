@@ -1,0 +1,135 @@
+<?taglib uri="http://www.zkoss.org/dsp/web/core" prefix="c"?>
+<zk xmlns:h="http://www.zkoss.org/2005/zk/native"
+	xmlns:w="http://www.zkoss.org/2005/zk/client">
+	<div id="win_proveedor" sclass="container-fluid"
+		use="com.italoweb.gestorfinan.controller.ProveedorController">
+		<style>
+			.div_list_proveedor { height: calc(100vh - 260px); overflow:
+			hidden; overflow-x: auto; overflow-y: auto; }
+
+			/* Por defecto, las celdas con texto recortado */
+			.z-listcell { white-space: nowrap; overflow: hidden;
+			text-overflow: ellipsis; max-width: 300px; }
+
+			/* Para Email (columna 3) y Direccion (columna 6) permitir
+			salto de línea */ .z-listbox .z-listitem >
+			.z-listcell:nth-child(3), .z-listbox .z-listitem >
+			.z-listcell:nth-child(6) { white-space: normal !important;
+			overflow: visible !important; text-overflow: clip
+			!important; max-width: none !important; word-break:
+			break-word; padding-right: 10px; }
+
+			/* Responsive */ @media (max-width: 768px) { .z-window {
+			width: 100% !important; left: 0 !important; top: 50px
+			!important; } }
+
+		</style>
+
+
+		<div class="py-3 py-lg-4">
+			<div class="row">
+				<div class="col-lg-6">
+					<label class="page-title mb-0" value="Proveedor"></label>
+				</div>
+				<div class="col-lg-6">
+					<div class="d-none d-lg-block">
+						<hlayout sclass="breadcrumb m-0 float-end">
+							<label sclass="breadcrumb-item"
+								value="Menu" />
+							<label sclass="breadcrumb-separator"
+								value="›" />
+							<label sclass="breadcrumb-item active"
+								value="Proveedor" />
+						</hlayout>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="mb-3">
+			<vlayout>
+				<div class="input-group">
+					<textbox id="text_filtro_proveedor"
+						class="form-control" placeholder="Buscar"
+						onChanging="win_proveedor.filtrarListProveedor(event.value)" />
+					<span class="input-group-btn">
+						<button iconSclass="z-icon-plus-circle"
+							class="btn btn-success" label="Crear"
+							onClick="win_proveedor.cargarWinProveedorForm(null)" />
+					</span>
+				</div>
+				<div class="div_list_proveedor">
+					<listbox id="listbox_proveedor" span="true"
+						nonselectableTags="*" emptyMessage="No hay Registros">
+						<listhead>
+							<listheader label="NIT" sort="auto" />
+							<listheader label="Nombre" sort="auto" />
+							<listheader label="Email" sort="auto" />
+							<listheader label="Telefono" sort="auto" />
+							<listheader label="Ciudad" sort="auto" />
+							<listheader label="Direccion" sort="auto" />
+							<listheader label="Acciones" hflex="min" />
+						</listhead>
+					</listbox>
+				</div>
+
+			</vlayout>
+		</div>
+		<window id="win_proveedor_form" title="Proveedor"
+			closable="true" width="30%" visible="false"
+			onClose="win_proveedor_form.setVisible(false); event.stopPropagation();">
+			<div class="row justify-content-center">
+				<div class="z-grid-border-less">
+					<div class="mb-3">
+						<label value="NIT:" class="infodigg-grid-title" />
+						<textbox id="text_nit" class="form-control" />
+					</div>
+					<div class="mb-3">
+						<label value="Nombre:"
+							class="infodigg-grid-title" />
+						<textbox id="text_nombre" class="form-control" />
+					</div>
+					<div class="mb-3">
+						<label value="Email:"
+							class="infodigg-grid-title" />
+						<textbox id="text_email" class="form-control" />
+					</div>
+					<div class="mb-3">
+						<label value="Telefono:"
+							class="infodigg-grid-title" />
+						<textbox id="text_telefono"
+							class="form-control" />
+					</div>
+					<div class="mb-3">
+						<label value="Ciudad:"
+							class="infodigg-grid-title" />
+						<combobox id="comb_ciudad" width="100%"
+							onSelect="win_proveedor.actualizarDepartamentoYPais()"
+							onChanging="win_proveedor.filtrarComboCiudad(event.value)" />
+					</div>
+					<div class="mb-3">
+						<label value="Departamento"
+							class="infodigg-grid-title" />
+						<textbox id="text_departamento"
+							class="form-control" disabled="true" />
+					</div>
+					<div class="mb-3">
+						<label value="Pais" class="infodigg-grid-title" />
+						<textbox id="text_pais" class="form-control"
+							disabled="true" />
+					</div>
+					<div class="mb-3">
+						<label value="Dirección:"
+							class="infodigg-grid-title" />
+						<textbox id="text_direccion"
+							class="form-control" />
+					</div>
+					<div sclass="text-end">
+						<button class="btn btn-primary"
+							iconSclass="fa fa-floppy-o" label="Guardar"
+							onClick="win_proveedor.guardarWinProveedorForm()" />
+					</div>
+				</div>
+			</div>
+		</window>
+	</div>
+</zk>
