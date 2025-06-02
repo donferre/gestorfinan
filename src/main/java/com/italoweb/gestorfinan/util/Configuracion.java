@@ -8,7 +8,7 @@ public class Configuracion {
     private static final Properties propiedades = new Properties();
 
     static {
-        try (InputStream input = Configuracion.class.getClassLoader().getResourceAsStream("configuracion.properties")) {
+        try (InputStream input = Configuracion.class.getClassLoader().getResourceAsStream("config.properties")) {
             if (input != null) {
                 propiedades.load(input);
             } else {

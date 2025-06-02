@@ -47,6 +47,7 @@ public class ProveedorController extends Window implements AfterCompose {
 	private Textbox text_telefono;
 	private Combobox comb_ciudad;
 	private Textbox text_direccion;
+	private Textbox text_persContacto;
 	private Combobox comb_departamento;
 	private Combobox comb_pais;
 
@@ -116,7 +117,7 @@ public class ProveedorController extends Window implements AfterCompose {
 		Pais paisSeleccionado = comb_pais.getSelectedItem().getValue();
 		List<Departamento> departamentos = poblacionDAO.listarDepartamentosPorPais(paisSeleccionado.getId());
 		cargarComboboxDepartamento(departamentos);
-		comb_departamento.setDisabled(false); 
+		comb_departamento.setDisabled(false);
 	}
 
 	private void cargarComboboxDepartamento(List<Departamento> departamentos) {
@@ -185,18 +186,20 @@ public class ProveedorController extends Window implements AfterCompose {
 		listitem.appendChild(new Listcell(proveedor.getEmail()));
 		listitem.appendChild(new Listcell(proveedor.getTelefono()));
 		listitem.appendChild(new Listcell(proveedor.getCiudad().getNombre()));
+		listitem.appendChild(new Listcell(proveedor.getPersonaContacto()));
 		listitem.appendChild(new Listcell(proveedor.getDireccion()));
-		   /*Estado*/
-        Switch checkActive = ComponentsUtil.getSwitch(proveedor.getEstado().equals(Estado.ACTIVO));
-        checkActive.addEventListener(Switch.ON_TOGGLE, new SerializableEventListener<Event>() {
+		/* Estado */
+		Switch checkActive = ComponentsUtil.getSwitch(proveedor.getEstado().equals(Estado.ACTIVO));
+		checkActive.addEventListener(Switch.ON_TOGGLE, new SerializableEventListener<Event>() {
 			private static final long serialVersionUID = 1L;
+
 			public void onEvent(Event event) throws Exception {
-                boolean check = (Boolean) event.getData();
-                Estado estado = check ? Estado.ACTIVO : Estado.INACTIVO;
-                proveedorDAO.actualizarEstado(estado, proveedor.getId());
-            }
-        });
-        listitem.appendChild(ComponentsUtil.getListcell(null, checkActive));
+				boolean check = (Boolean) event.getData();
+				Estado estado = check ? Estado.ACTIVO : Estado.INACTIVO;
+				proveedorDAO.actualizarEstado(estado, proveedor.getId());
+			}
+		});
+		listitem.appendChild(ComponentsUtil.getListcell(null, checkActive));
 
 		/* Acciones */
 		Button btnEdit = ComponentsUtil.getButton("", "btn btn-primary", "z-icon-pencil");
@@ -263,6 +266,7 @@ public class ProveedorController extends Window implements AfterCompose {
 	public void cargarWinProveedorForm(Proveedor proveedor) {
 		text_nit.setValue("");
 		text_nombre.setValue("");
+		text_persContacto.setValue("");
 		text_email.setValue("");
 		text_telefono.setValue("");
 		text_direccion.setValue("");
@@ -275,48 +279,52 @@ public class ProveedorController extends Window implements AfterCompose {
 		if (proveedor != null) {
 			text_nit.setValue(proveedor.getNit());
 			text_nombre.setValue(proveedor.getNombre());
+			text_persContacto.setValue(proveedor.getPersonaContacto());
 			text_email.setValue(proveedor.getEmail());
 			text_telefono.setValue(proveedor.getTelefono());
 			text_direccion.setValue(proveedor.getDireccion());
 
 			Ciudad ciudad = proveedor.getCiudad();
-			comb_ciudad.setValue(proveedor.getCiudad().getNombre());
 			Departamento departamento = ciudad.getDepartamento();
-			comb_departamento.setValue(ciudad.getDepartamento().getNombre());
-			comb_pais.setValue(departamento.getPais().getNombre());
-//			for (Comboitem item : comb_pais.getItems()) {
-//				if (((Pais) item.getValue()).getId().equals(pais.getId())) {
-//					comb_pais.setSelectedItem(item);
-//					break;
-//				}
-//			}
-//
-//			List<Departamento> departamentos = poblacionDAO.listarDepartamentosPorPais(pais.getId());
-//			cargarComboboxDepartamento(departamentos);
-//			for (Comboitem item : comb_departamento.getItems()) {
-//				if (((Departamento) item.getValue()).getId().equals(departamento.getId())) {
-//					comb_departamento.setSelectedItem(item);
-//					break;
-//				}
-//			}
-//
-//			List<Ciudad> ciudades = poblacionDAO.listarCiudadesPorDepartamento(departamento.getId());
-//			cargarComboboxCiudad(ciudades);
-//			for (Comboitem item : comb_ciudad.getItems()) {
-//				if (((Ciudad) item.getValue()).getId().equals(ciudad.getId())) {
-//					comb_ciudad.setSelectedItem(item);
-//					break;
-//				}
-//			}
+			Pais pais = departamento.getPais();
+			for (Comboitem item : comb_pais.getItems()) {
+				if (((Pais) item.getValue()).getId().equals(pais.getId())) {
+					comb_pais.setSelectedItem(item);
+					break;
+				}
+			}
+
+			List<Departamento> departamentos = poblacionDAO.listarDepartamentosPorPais(pais.getId());
+			cargarComboboxDepartamento(departamentos);
+			comb_departamento.setDisabled(false);
+			for (Comboitem item : comb_departamento.getItems()) {
+				if (((Departamento) item.getValue()).getId().equals(departamento.getId())) {
+					comb_departamento.setSelectedItem(item);
+					break;
+				}
+			}
+
+			List<Ciudad> ciudades = poblacionDAO.listarCiudadesPorDepartamento(departamento.getId());
+			cargarComboboxCiudad(ciudades);
+			comb_ciudad.setDisabled(false);
+			for (Comboitem item : comb_ciudad.getItems()) {
+				if (((Ciudad) item.getValue()).getId().equals(ciudad.getId())) {
+					comb_ciudad.setSelectedItem(item);
+					break;
+				}
+			}
+		} else {
+			deshabilitaSelPais();
 		}
 		this.win_proveedor_form.setAttribute("CLIENTE", proveedor);
 		this.win_proveedor_form.doModal();
 	}
 
 	public void guardarWinProveedorForm() {
-		
+
 		String nit = this.text_nit.getValue().trim();
 		String nombre = this.text_nombre.getValue().trim();
+		String personaContacto = this.text_persContacto.getValue().trim();
 		String email = this.text_email.getValue().trim();
 		String telefono = this.text_telefono.getValue();
 		Ciudad ciudad = comb_ciudad.getSelectedItem() != null ? (Ciudad) comb_ciudad.getSelectedItem().getValue()
@@ -324,7 +332,7 @@ public class ProveedorController extends Window implements AfterCompose {
 		String direccion = this.text_direccion.getValue();
 		String mensaje = "Proveedor Guardado Exitosamente";
 		String tipoPorDefecto = Configuracion.get("proveedor.tipo_por_defecto");
-		System.out.println("TIPO: "+tipoPorDefecto);
+		System.out.println("TIPO: " + tipoPorDefecto);
 		// Validaciones
 		if (StringUtils.isBlank(nit)) {
 			DialogUtil.showError("El NIT es Obligatorio.");
@@ -332,6 +340,10 @@ public class ProveedorController extends Window implements AfterCompose {
 		}
 		if (StringUtils.isBlank(nombre)) {
 			DialogUtil.showError("El nombre es Obligatorio.");
+			return;
+		}
+		if (StringUtils.isBlank(personaContacto)) {
+			DialogUtil.showError("El contacto es Obligatorio.");
 			return;
 		}
 		if (StringUtils.isBlank(email)) {
@@ -362,7 +374,7 @@ public class ProveedorController extends Window implements AfterCompose {
 			proveedor.setCiudad(ciudad);
 			proveedor.setTipoProveedor(tipoPorDefecto);
 			proveedor.setDireccion(direccion);
-			proveedor.setPersonaContacto("PRUEBA");
+			proveedor.setPersonaContacto(personaContacto);
 			proveedor.setEstado(Estado.ACTIVO);
 			this.proveedorDAO.save(proveedor);
 		} else {
@@ -372,6 +384,7 @@ public class ProveedorController extends Window implements AfterCompose {
 			proveedor.setTelefono(telefono);
 			proveedor.setCiudad(ciudad);
 			proveedor.setDireccion(direccion);
+			proveedor.setPersonaContacto(personaContacto);
 			this.proveedorDAO.update(proveedor);
 			mensaje = "Proveedor Editado Exitosamente";
 		}
