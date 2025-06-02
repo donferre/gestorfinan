@@ -10,6 +10,7 @@ public class HibernateUtil {
         try {
             return new Configuration().configure().buildSessionFactory();
         } catch (Throwable ex) {
+        	 ex.printStackTrace(); 
             throw new ExceptionInInitializerError("Error al crear la SessionFactory: " + ex);
         }
     }

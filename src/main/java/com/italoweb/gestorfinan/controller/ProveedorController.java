@@ -6,7 +6,9 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.zkoss.zk.ui.Executions;
+import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.event.Events;
+import org.zkoss.zk.ui.event.SerializableEventListener;
 import org.zkoss.zk.ui.ext.AfterCompose;
 import org.zkoss.zul.Button;
 import org.zkoss.zul.Combobox;
@@ -20,11 +22,16 @@ import org.zkoss.zul.Listitem;
 import org.zkoss.zul.Textbox;
 import org.zkoss.zul.Window;
 
+import com.italoweb.gestorfinan.components.Switch;
+import com.italoweb.gestorfinan.model.Estado;
 import com.italoweb.gestorfinan.model.Proveedor;
 import com.italoweb.gestorfinan.model.poblacion.Ciudad;
+import com.italoweb.gestorfinan.model.poblacion.Departamento;
+import com.italoweb.gestorfinan.model.poblacion.Pais;
 import com.italoweb.gestorfinan.repository.PoblacionDAO;
 import com.italoweb.gestorfinan.repository.ProveedorDAO;
 import com.italoweb.gestorfinan.util.ComponentsUtil;
+import com.italoweb.gestorfinan.util.Configuracion;
 import com.italoweb.gestorfinan.util.DialogUtil;
 
 public class ProveedorController extends Window implements AfterCompose {
@@ -40,8 +47,8 @@ public class ProveedorController extends Window implements AfterCompose {
 	private Textbox text_telefono;
 	private Combobox comb_ciudad;
 	private Textbox text_direccion;
-	private Textbox text_departamento;
-	private Textbox text_pais;
+	private Combobox comb_departamento;
+	private Combobox comb_pais;
 
 	private ProveedorDAO proveedorDAO;
 	private PoblacionDAO poblacionDAO;
@@ -63,7 +70,7 @@ public class ProveedorController extends Window implements AfterCompose {
 		this.text_direccion.setMaxlength(25);
 		this.text_telefono.setZclass("none");
 		this.text_telefono.setWidgetListener("onBind", "jq(this.getInputNode()).mask('(999) 999-9999');");
-		cargarCiudad();
+		cargarComboboxPais();
 	}
 
 	public void cargarListaProveedor() {
@@ -72,26 +79,80 @@ public class ProveedorController extends Window implements AfterCompose {
 		proveedorDAO.findAll().forEach(this::createListitem);
 	}
 
-	public void cargarCiudad() {
-		this.comb_ciudad.setAutocomplete(false);
-		List<Ciudad> listaCiudades = this.poblacionDAO.listarCiudadesConDepartamentoYPais();
-		this.comb_ciudad.getItems().clear();
-		for (Ciudad ciudad : listaCiudades) {
-			this.comb_ciudad.appendChild(ComponentsUtil.getComboitem(ciudad.getNombre(), null, ciudad));
+	private void cargarComboboxPais() {
+		System.out.println("método cargarComboboxPais");
+		comb_pais.getItems().clear();
+		comb_departamento.getItems().clear();
+		comb_ciudad.getItems().clear();
+
+		List<Pais> paises = poblacionDAO.listarPaises();
+		for (Pais pais : paises) {
+			Comboitem item = new Comboitem(pais.getNombre());
+			item.setValue(pais);
+			comb_pais.appendChild(item);
 		}
+
+		comb_pais.setSelectedItem(null);
+
+		// Limpia y deshabilita los combos hijos
+		deshabilitaSelPais();
 	}
 
-	public void actualizarDepartamentoYPais() {
-		Comboitem selectedItem = comb_ciudad.getSelectedItem();
-		if (selectedItem != null) {
-			Ciudad ciudad = (Ciudad) selectedItem.getValue();
-			if (ciudad != null) {
-				text_departamento.setValue(ciudad.getDepartamento().getNombre());
-				text_pais.setValue(ciudad.getDepartamento().getPais().getNombre());
-			}
-		} else {
-			text_departamento.setValue("");
-			text_pais.setValue("");
+	public void deshabilitaSelPais() {
+		comb_departamento.getItems().clear();
+		comb_departamento.setSelectedItem(null);
+		comb_departamento.setDisabled(true);
+		comb_departamento.setValue(null);
+		comb_ciudad.getItems().clear();
+		comb_ciudad.setValue(null);
+		comb_ciudad.setSelectedItem(null);
+		comb_ciudad.setDisabled(true);
+	}
+
+	public void onSelectPais() {
+		System.out.println("método onSelectPais");
+		deshabilitaSelPais();
+
+		Pais paisSeleccionado = comb_pais.getSelectedItem().getValue();
+		List<Departamento> departamentos = poblacionDAO.listarDepartamentosPorPais(paisSeleccionado.getId());
+		cargarComboboxDepartamento(departamentos);
+		comb_departamento.setDisabled(false); 
+	}
+
+	private void cargarComboboxDepartamento(List<Departamento> departamentos) {
+		System.out.println("método cargarComboboxDepartamento");
+		deshabilitaSelPais();
+
+		for (Departamento d : departamentos) {
+			Comboitem item = new Comboitem(d.getNombre());
+			item.setValue(d);
+			comb_departamento.appendChild(item);
+		}
+
+	}
+
+	public void deshabilitaSelDep() {
+		comb_ciudad.getItems().clear();
+		comb_ciudad.setSelectedItem(null);
+		comb_ciudad.setDisabled(true);
+		comb_ciudad.setValue(null);
+	}
+
+	public void onSelectDepartamento() {
+		deshabilitaSelDep();
+		Departamento depto = comb_departamento.getSelectedItem().getValue();
+		List<Ciudad> ciudades = poblacionDAO.listarCiudadesPorDepartamento(depto.getId());
+		cargarComboboxCiudad(ciudades);
+		comb_ciudad.setDisabled(false);
+	}
+
+	private void cargarComboboxCiudad(List<Ciudad> ciudades) {
+		deshabilitaSelDep();
+
+		for (Ciudad c : ciudades) {
+			Comboitem item = new Comboitem(c.getNombre());
+			item.setValue(c);
+			comb_ciudad.appendChild(item);
 		}
 	}
 
@@ -125,6 +186,17 @@ public class ProveedorController extends Window implements AfterCompose {
 		listitem.appendChild(new Listcell(proveedor.getTelefono()));
 		listitem.appendChild(new Listcell(proveedor.getCiudad().getNombre()));
 		listitem.appendChild(new Listcell(proveedor.getDireccion()));
+		   /*Estado*/
+        Switch checkActive = ComponentsUtil.getSwitch(proveedor.getEstado().equals(Estado.ACTIVO));
+        checkActive.addEventListener(Switch.ON_TOGGLE, new SerializableEventListener<Event>() {
+			private static final long serialVersionUID = 1L;
+			public void onEvent(Event event) throws Exception {
+                boolean check = (Boolean) event.getData();
+                Estado estado = check ? Estado.ACTIVO : Estado.INACTIVO;
+                proveedorDAO.actualizarEstado(estado, proveedor.getId());
+            }
+        });
+        listitem.appendChild(ComponentsUtil.getListcell(null, checkActive));
 
 		/* Acciones */
 		Button btnEdit = ComponentsUtil.getButton("", "btn btn-primary", "z-icon-pencil");
@@ -135,7 +207,7 @@ public class ProveedorController extends Window implements AfterCompose {
 		btnDelete.addEventListener(Events.ON_CLICK, (e) -> {
 			this.eliminarProveedor(proveedor);
 		});
-		
+
 		Div divBtnGroup = ComponentsUtil.getDiv("btn-group btn-group-sm", btnEdit, btnDelete);
 		listitem.appendChild(ComponentsUtil.getListcell("", divBtnGroup));
 
@@ -172,6 +244,14 @@ public class ProveedorController extends Window implements AfterCompose {
 		filtrarCombo(this.comb_ciudad, filter);
 	}
 
+	public void filtrarComboPais(String filter) {
+		filtrarCombo(this.comb_pais, filter);
+	}
+
+	public void filtrarComboDepartamento(String filter) {
+		filtrarCombo(this.comb_departamento, filter);
+	}
+
 	public void filtrarCombo(Combobox combo, String filter) {
 		filter = filter.trim().toUpperCase();
 		for (Comboitem comboItem : combo.getItems()) {
@@ -181,30 +261,60 @@ public class ProveedorController extends Window implements AfterCompose {
 	}
 
 	public void cargarWinProveedorForm(Proveedor proveedor) {
-		this.text_nit.setValue("");
-		this.text_nombre.setValue("");
-		this.text_email.setValue("");
-		this.text_telefono.setValue("");
-		this.comb_ciudad.setValue("");
-		this.text_direccion.setValue("");
-		this.text_departamento.setValue("");
-		this.text_pais.setValue("");
+		text_nit.setValue("");
+		text_nombre.setValue("");
+		text_email.setValue("");
+		text_telefono.setValue("");
+		text_direccion.setValue("");
+		comb_pais.setSelectedItem(null);
+		comb_departamento.getItems().clear();
+		comb_ciudad.getItems().clear();
+		comb_departamento.setDisabled(true);
+		comb_ciudad.setDisabled(true);
 
 		if (proveedor != null) {
-			this.text_nit.setValue(proveedor.getNit());
-			this.text_nombre.setValue(proveedor.getNombre());
-			this.text_email.setValue(proveedor.getEmail());
-			this.text_telefono.setValue(proveedor.getTelefono());
-			this.comb_ciudad.setValue(proveedor.getCiudad().getNombre());
-			this.text_departamento.setValue(proveedor.getCiudad().getDepartamento().getNombre());
-			this.text_pais.setValue(proveedor.getCiudad().getDepartamento().getPais().getNombre());
-			this.text_direccion.setValue(proveedor.getDireccion());
+			text_nit.setValue(proveedor.getNit());
+			text_nombre.setValue(proveedor.getNombre());
+			text_email.setValue(proveedor.getEmail());
+			text_telefono.setValue(proveedor.getTelefono());
+			text_direccion.setValue(proveedor.getDireccion());
+
+			Ciudad ciudad = proveedor.getCiudad();
+			comb_ciudad.setValue(proveedor.getCiudad().getNombre());
+			Departamento departamento = ciudad.getDepartamento();
+			comb_departamento.setValue(ciudad.getDepartamento().getNombre());
+			comb_pais.setValue(departamento.getPais().getNombre());
+//			for (Comboitem item : comb_pais.getItems()) {
+//				if (((Pais) item.getValue()).getId().equals(pais.getId())) {
+//					comb_pais.setSelectedItem(item);
+//					break;
+//				}
+//			}
+//
+//			List<Departamento> departamentos = poblacionDAO.listarDepartamentosPorPais(pais.getId());
+//			cargarComboboxDepartamento(departamentos);
+//			for (Comboitem item : comb_departamento.getItems()) {
+//				if (((Departamento) item.getValue()).getId().equals(departamento.getId())) {
+//					comb_departamento.setSelectedItem(item);
+//					break;
+//				}
+//			}
+//
+//			List<Ciudad> ciudades = poblacionDAO.listarCiudadesPorDepartamento(departamento.getId());
+//			cargarComboboxCiudad(ciudades);
+//			for (Comboitem item : comb_ciudad.getItems()) {
+//				if (((Ciudad) item.getValue()).getId().equals(ciudad.getId())) {
+//					comb_ciudad.setSelectedItem(item);
+//					break;
+//				}
+//			}
 		}
 		this.win_proveedor_form.setAttribute("CLIENTE", proveedor);
 		this.win_proveedor_form.doModal();
 	}
 
 	public void guardarWinProveedorForm() {
+		
 		String nit = this.text_nit.getValue().trim();
 		String nombre = this.text_nombre.getValue().trim();
 		String email = this.text_email.getValue().trim();
@@ -213,7 +323,8 @@ public class ProveedorController extends Window implements AfterCompose {
 				: null;
 		String direccion = this.text_direccion.getValue();
 		String mensaje = "Proveedor Guardado Exitosamente";
-
+		String tipoPorDefecto = Configuracion.get("proveedor.tipo_por_defecto");
+		System.out.println("TIPO: "+tipoPorDefecto);
 		// Validaciones
 		if (StringUtils.isBlank(nit)) {
 			DialogUtil.showError("El NIT es Obligatorio.");
@@ -236,7 +347,7 @@ public class ProveedorController extends Window implements AfterCompose {
 			return;
 		}
 		if (StringUtils.isBlank(direccion)) {
-			DialogUtil.showError("La direccion es Obligatoria.");
+			DialogUtil.showError("La dirección es Obligatoria.");
 			return;
 		}
 
@@ -248,15 +359,18 @@ public class ProveedorController extends Window implements AfterCompose {
 			proveedor.setNombre(nombre);
 			proveedor.setEmail(email);
 			proveedor.setTelefono(telefono);
-			proveedor.setCiudad(ciudad); 
+			proveedor.setCiudad(ciudad);
+			proveedor.setTipoProveedor(tipoPorDefecto);
 			proveedor.setDireccion(direccion);
+			proveedor.setPersonaContacto("PRUEBA");
+			proveedor.setEstado(Estado.ACTIVO);
 			this.proveedorDAO.save(proveedor);
 		} else {
 			proveedor.setNit(nit);
 			proveedor.setNombre(nombre);
 			proveedor.setEmail(email);
 			proveedor.setTelefono(telefono);
-			proveedor.setCiudad(ciudad); 
+			proveedor.setCiudad(ciudad);
 			proveedor.setDireccion(direccion);
 			this.proveedorDAO.update(proveedor);
 			mensaje = "Proveedor Editado Exitosamente";

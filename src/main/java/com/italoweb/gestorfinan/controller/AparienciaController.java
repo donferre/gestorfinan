@@ -31,7 +31,7 @@ public class AparienciaController extends Window implements AfterCompose {
     private Fileupload fileUploadLogo;
 
     // Directorio en 'webapp' para los archivos accesibles
-    private static final String LOGO_DIR = System.getProperty("user.home") + "/gestorepro/config/images";
+    private static final String LOGO_DIR = System.getProperty("user.home") + "/gestorfinan/config/images";
     private static final String LOGO_FILENAME = "logo_app.jpg";
 
     @Override

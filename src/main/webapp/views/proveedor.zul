@@ -62,7 +62,7 @@
 						nonselectableTags="*" emptyMessage="No hay Registros">
 						<listhead>
 							<listheader label="NIT" sort="auto" />
-							<listheader label="Nombre" sort="auto"  />
+							<listheader label="Nombre" sort="auto" />
 							<listheader label="Email" sort="auto" />
 							<listheader label="Telefono" sort="auto" />
 							<listheader label="Ciudad" sort="auto" />
@@ -99,24 +99,32 @@
 						<textbox id="text_telefono"
 							class="form-control" />
 					</div>
+					<!-- País -->
+					<div class="mb-3">
+						<label value="País:"
+							class="infodigg-grid-title" />
+						<combobox id="comb_pais" width="100%"
+							onChanging="win_proveedor.filtrarComboPais(event.value)"
+							onSelect="win_proveedor.onSelectPais()"/>
+					</div>
+
+					<!-- Departamento -->
+					<div class="mb-3">
+						<label value="Departamento:"
+							class="infodigg-grid-title" />
+						<combobox id="comb_departamento" width="100%"
+							onChanging="win_proveedor.filtrarComboDepartamento(event.value)"
+							onSelect="win_proveedor.onSelectDepartamento()"/>
+					</div>
+
+					<!-- Ciudad -->
 					<div class="mb-3">
 						<label value="Ciudad:"
 							class="infodigg-grid-title" />
 						<combobox id="comb_ciudad" width="100%"
-							onSelect="win_proveedor.actualizarDepartamentoYPais()"
-							onChanging="win_proveedor.filtrarComboCiudad(event.value)" />
+							onChanging="win_proveedor.filtrarComboCiudad(event.value)"/>
 					</div>
-					<div class="mb-3">
-						<label value="Departamento"
-							class="infodigg-grid-title" />
-						<textbox id="text_departamento"
-							class="form-control" disabled="true" />
-					</div>
-					<div class="mb-3">
-						<label value="Pais" class="infodigg-grid-title" />
-						<textbox id="text_pais" class="form-control"
-							disabled="true" />
-					</div>
+
 					<div class="mb-3">
 						<label value="Dirección:"
 							class="infodigg-grid-title" />

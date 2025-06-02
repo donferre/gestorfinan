@@ -1,46 +1,36 @@
 package com.italoweb.gestorfinan.model;
 
-import java.util.Date;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "clientes")
+@Table(name= "inventario")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Cliente {
+public class Inventario {
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@Column(nullable = false)
-	private String nombre;
-
-	@Column(nullable = false)
-	private String nit;
-
-	@Column(unique = true, nullable = false)
-	private String email;
-
-	@Column(nullable = false)
-	private String telefono;
-
-	@Column(nullable = false)
-	private Estado estado;
-
-	@Column(name = "tipo_proveedor")
-	private TipoProveedor tipoProveedor;
-
-	@Column(nullable = true)
-	private Date fechaCreacion;
-
+	@ManyToOne(optional = false)
+	@JoinColumn(name = "producto_id", nullable = false)
+	private Producto producto;// codigo
+	
+	@Column(name = "cantidad_stok")
+	private Integer cantidadStok;
+	
+	@ManyToOne(optional = false)
+	@JoinColumn(name = "proveedor_id", nullable = false)
+	private Proveedor proveedor;
 }

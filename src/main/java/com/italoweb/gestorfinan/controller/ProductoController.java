@@ -25,6 +25,7 @@ import com.italoweb.gestorfinan.model.Categoria;
 import com.italoweb.gestorfinan.model.Impuesto;
 import com.italoweb.gestorfinan.model.Producto;
 import com.italoweb.gestorfinan.model.UnidadCompra;
+import com.italoweb.gestorfinan.model.poblacion.Ciudad;
 import com.italoweb.gestorfinan.repository.CategoriaDAO;
 import com.italoweb.gestorfinan.repository.ImpuestoDAO;
 import com.italoweb.gestorfinan.repository.ProductoDAO;
@@ -39,18 +40,14 @@ public class ProductoController extends Window implements AfterCompose {
 	private Listbox listbox_productos;
 	private Window win_productos_form;
 	private Textbox text_codigo;
+	private Textbox text_nombre;
 	private Textbox text_descripcion;
 	private Combobox comb_unidad_compra;
-	private Intbox int_inventario;
-	private Decimalbox debx_precio_venta;
-	private Decimalbox debx_precio_compra;
-	private Decimalbox debx_porcentaje_descuento;
-	private Decimalbox debx_porcentaje_impuesto;
-	private Combobox comb_impuesto;
 	private Combobox comb_categoria;
-	private Intbox int_stock_minimo;
 	private Textbox text_marca;
-	private Textbox text_ubicacion;
+	private Intbox int_stock_minimo;
+	private Combobox comb_impuesto;
+	private Decimalbox debx_porcentaje_impuesto;
 
 	private ProductoDAO productoDAO = new ProductoDAO();
 	private UnidadCompraDAO unidadCompraDAO = new UnidadCompraDAO();
@@ -69,6 +66,7 @@ public class ProductoController extends Window implements AfterCompose {
 		cargarUnidadCompra();
 		cargarCategoria();
 		cargarImpuesto();
+		this.debx_porcentaje_impuesto.setDisabled(true);
 	}
 
 	public void cargarUnidadCompra() {
@@ -86,6 +84,17 @@ public class ProductoController extends Window implements AfterCompose {
 		for (Impuesto impuesto : listaImpuesto) {
 			this.comb_impuesto.appendChild(ComponentsUtil.getComboitem(impuesto.getNombre(), null, impuesto));
 		}
+		this.comb_impuesto.addEventListener(Events.ON_SELECT, event -> {
+			Comboitem selectedItem = this.comb_impuesto.getSelectedItem();
+			if (selectedItem != null) {
+				Impuesto impuestoSeleccionado = selectedItem.getValue();
+				if (impuestoSeleccionado != null) {
+					this.debx_porcentaje_impuesto.setValue(impuestoSeleccionado.getPorcentaje());
+				} else {
+					this.debx_porcentaje_impuesto.setValue(new BigDecimal(0)); // o BigDecimal.ZERO
+				}
+			}
+		});
 	}
 
 	public void cargarCategoria() {
@@ -126,18 +135,14 @@ public class ProductoController extends Window implements AfterCompose {
 	private void actualizarListitem(Producto producto, Listitem listitem) {
 		listitem.getChildren().clear();
 		listitem.appendChild(new Listcell(producto.getCodigo()));
+		listitem.appendChild(new Listcell(producto.getNombre()));
 		listitem.appendChild(new Listcell(producto.getDescripcion()));
 		listitem.appendChild(new Listcell(producto.getUnidadCompra().getNombre().toString()));
-		listitem.appendChild(new Listcell(producto.getInventario().toString()));
-		listitem.appendChild(new Listcell(producto.getPrecioVenta().toString()));
-		listitem.appendChild(new Listcell(producto.getPrecioCompra().toString()));
-		listitem.appendChild(new Listcell(producto.getPorcentajeDescuento().toString()));
-		listitem.appendChild(new Listcell(producto.getPorcentajeImpuestoVenta().toString()));
-		listitem.appendChild(new Listcell(producto.getConceptoImpuesto().getNombre().toString()));
+		listitem.appendChild(new Listcell(producto.getImpuesto().getNombre()));
+		listitem.appendChild(new Listcell(producto.getImpuesto().getPorcentaje().toString()));
 		listitem.appendChild(new Listcell(producto.getCategoria().getNombre().toString()));
 		listitem.appendChild(new Listcell(producto.getStockMinimo().toString()));
 		listitem.appendChild(new Listcell(producto.getMarca()));
-		listitem.appendChild(new Listcell(producto.getUbicacion()));
 
 		/* Acciones */
 		Button btnEdit = ComponentsUtil.getButton("", "btn btn-primary", "z-icon-pencil");
@@ -160,23 +165,16 @@ public class ProductoController extends Window implements AfterCompose {
 			Producto p = listitem.getValue();
 			boolean visible = filter.isEmpty()
 					|| (p.getCodigo() != null && p.getCodigo().toUpperCase().contains(filter))
+					|| (p.getNombre() != null && p.getNombre().toUpperCase().contains(filter))
 					|| (p.getDescripcion() != null && p.getDescripcion().toUpperCase().contains(filter))
 					|| (p.getUnidadCompra() != null && p.getUnidadCompra().getNombre() != null
 							&& p.getUnidadCompra().getNombre().toUpperCase().contains(filter))
-					|| (p.getInventario() != null && p.getInventario().toString().toUpperCase().contains(filter))
-					|| (p.getPrecioVenta() != null && p.getPrecioVenta().toString().toUpperCase().contains(filter))
-					|| (p.getPrecioCompra() != null && p.getPrecioCompra().toString().toUpperCase().contains(filter))
-					|| (p.getPorcentajeDescuento() != null
-							&& p.getPorcentajeDescuento().toString().toUpperCase().contains(filter))
-					|| (p.getPorcentajeImpuestoVenta() != null
-							&& p.getPorcentajeImpuestoVenta().toString().toUpperCase().contains(filter))
-					|| (p.getConceptoImpuesto() != null && p.getConceptoImpuesto().getNombre() != null
-							&& p.getConceptoImpuesto().getNombre().toUpperCase().contains(filter))
 					|| (p.getCategoria() != null && p.getCategoria().getNombre() != null
 							&& p.getCategoria().getNombre().toUpperCase().contains(filter))
+					|| (p.getImpuesto() != null && p.getImpuesto().getNombre() != null
+							&& p.getImpuesto().getNombre().toUpperCase().contains(filter))
 					|| (p.getStockMinimo() != null && p.getStockMinimo().toString().toUpperCase().contains(filter))
-					|| (p.getMarca() != null && p.getMarca().toUpperCase().contains(filter))
-					|| (p.getUbicacion() != null && p.getUbicacion().toUpperCase().contains(filter));
+					|| (p.getMarca() != null && p.getMarca().toUpperCase().contains(filter));
 
 			listitem.setVisible(visible);
 		}
@@ -191,6 +189,15 @@ public class ProductoController extends Window implements AfterCompose {
 						DialogUtil.showShortMessage("success", "Ingreso Eliminado Exitosamente");
 					}
 				});
+	}
+
+	public void validaCodigo() {
+		System.out.print("Ingreso a validar Código...");
+		if (productoDAO.existeProductoConCodigo(this.text_codigo.getValue().trim())) {
+			DialogUtil.showError("El código ingresado ya existe. Usar otro.");
+			this.text_codigo.setValue(null);
+			this.text_codigo.setFocus(true);
+		}
 	}
 
 	public void filtrarComboCategoria(String filter) {
@@ -213,37 +220,29 @@ public class ProductoController extends Window implements AfterCompose {
 		}
 	}
 
-	// En cargarWinProductoForm() — reemplaza asignaciones directas con setValue():
 	public void cargarWinProductoForm(Producto producto) {
 		this.text_codigo.setValue("");
+		this.text_nombre.setValue("");
 		this.text_descripcion.setValue("");
 		this.comb_unidad_compra.setSelectedItem(null);
-		this.int_inventario.setValue(0);
-		this.debx_precio_venta.setValue(BigDecimal.ZERO);
-		this.debx_precio_compra.setValue(BigDecimal.ZERO);
-		this.debx_porcentaje_descuento.setValue(BigDecimal.ZERO);
-		this.debx_porcentaje_impuesto.setValue(BigDecimal.ZERO);
 		this.comb_impuesto.setSelectedItem(null);
+		this.debx_porcentaje_impuesto.setValue(new BigDecimal(0));
 		this.comb_categoria.setSelectedItem(null);
 		this.int_stock_minimo.setValue(0);
 		this.text_marca.setValue("");
-		this.text_ubicacion.setValue("");
 
 		if (producto != null) {
 			System.out.println("INGRESO AQUI");
 			this.text_codigo.setValue(producto.getCodigo());
+			this.text_nombre.setValue(producto.getNombre());
 			this.text_descripcion.setValue(producto.getDescripcion());
+			ComponentsUtil.setComboboxValue(this.comb_impuesto, producto.getImpuesto());
+			this.debx_porcentaje_impuesto.setValue(producto.getImpuesto().getPorcentaje());
+			System.out.println("PORCENTAJE : " + producto.getImpuesto().getPorcentaje());
 			ComponentsUtil.setComboboxValue(this.comb_unidad_compra, producto.getUnidadCompra());
-			this.int_inventario.setValue(producto.getInventario());
-			this.debx_precio_venta.setValue(producto.getPrecioVenta());
-			this.debx_precio_compra.setValue(producto.getPrecioCompra());
-			this.debx_porcentaje_descuento.setValue(producto.getPorcentajeDescuento());
-			this.debx_porcentaje_impuesto.setValue(producto.getPorcentajeImpuestoVenta());
-			ComponentsUtil.setComboboxValue(this.comb_impuesto, producto.getConceptoImpuesto());
 			ComponentsUtil.setComboboxValue(this.comb_categoria, producto.getCategoria());
 			this.int_stock_minimo.setValue(producto.getStockMinimo());
 			this.text_marca.setValue(producto.getMarca());
-			this.text_ubicacion.setValue(producto.getUbicacion());
 		}
 
 		this.win_productos_form.setAttribute("PRODUCTO", producto);
@@ -252,15 +251,11 @@ public class ProductoController extends Window implements AfterCompose {
 
 	public void guardarWinProductoForm() {
 		String codigo = this.text_codigo.getValue().trim();
+		String nombre = this.text_nombre.getValue().trim();
 		String descripcion = this.text_descripcion.getValue().trim();
 		UnidadCompra unidadCompra = this.comb_unidad_compra.getSelectedItem() != null
 				? this.comb_unidad_compra.getSelectedItem().getValue()
 				: null;
-
-		BigDecimal precioVenta = this.debx_precio_venta.getValue();
-		BigDecimal precioCompra = this.debx_precio_compra.getValue();
-		BigDecimal porcentajeDescuento = this.debx_porcentaje_descuento.getValue();
-		BigDecimal porcentajeImpuesto = this.debx_porcentaje_impuesto.getValue();
 
 		Impuesto conceptoImpuesto = this.comb_impuesto.getSelectedItem() != null
 				? this.comb_impuesto.getSelectedItem().getValue()
@@ -270,48 +265,34 @@ public class ProductoController extends Window implements AfterCompose {
 				? this.comb_categoria.getSelectedItem().getValue()
 				: null;
 
-		Integer inventario = this.int_inventario.getValue();
 		Integer stockMinimo = this.int_stock_minimo.getValue();
 		String marca = this.text_marca.getValue().trim();
-		String ubicacion = this.text_ubicacion.getValue().trim();
 
 		// Validaciones
+		if (productoDAO.existeProductoConCodigo(codigo)) {
+			DialogUtil.showError("El código ingresado ya existe. Usar otro.");
+		}
 		if (StringUtils.isBlank(codigo)) {
-			DialogUtil.showError("El Código es obligatorio");
+			DialogUtil.showError("El Código es obligatorio.");
 			return;
 		}
-		if (StringUtils.isBlank(descripcion)) {
-			DialogUtil.showError("La Descripción es obligatoria");
+		if (StringUtils.isBlank(nombre)) {
+			DialogUtil.showError("El nombre es obligatorio.");
 			return;
 		}
 		if (unidadCompra == null) {
-			DialogUtil.showError("La Unidad de Compra es obligatoria");
-			return;
-		}
-		if (precioVenta == null) {
-			DialogUtil.showError("El Precio de Venta es obligatorio");
-			return;
-		}
-		if (precioCompra == null) {
-			DialogUtil.showError("El Precio de Compra es obligatorio");
-			return;
-		}
-		if (porcentajeDescuento == null) {
-			DialogUtil.showError("El Porcentaje de Descuento es obligatorio");
-			return;
-		}
-		if (porcentajeImpuesto == null) {
-			DialogUtil.showError("El Porcentaje de Impuesto es obligatorio");
+			DialogUtil.showError("La Unidad de Compra es obligatoria.");
 			return;
 		}
 		if (conceptoImpuesto == null) {
-			DialogUtil.showError("El Concepto de Impuesto es obligatorio");
+			DialogUtil.showError("El Concepto de Impuesto es obligatorio.");
 			return;
 		}
 		if (categoria == null) {
-			DialogUtil.showError("La Categoría es obligatoria");
+			DialogUtil.showError("La Categoría es obligatoria.");
 			return;
 		}
+
 		Producto producto = (Producto) this.win_productos_form.getAttribute("PRODUCTO");
 
 		if (producto == null) {
@@ -319,18 +300,13 @@ public class ProductoController extends Window implements AfterCompose {
 		}
 
 		producto.setCodigo(codigo);
+		producto.setNombre(nombre);
 		producto.setDescripcion(descripcion);
 		producto.setUnidadCompra(unidadCompra);
-		producto.setPrecioVenta(precioVenta);
-		producto.setPrecioCompra(precioCompra);
-		producto.setPorcentajeDescuento(porcentajeDescuento);
-		producto.setPorcentajeImpuestoVenta(porcentajeImpuesto);
-		producto.setConceptoImpuesto(conceptoImpuesto);
 		producto.setCategoria(categoria);
-		producto.setInventario(inventario);
-		producto.setStockMinimo(stockMinimo);
 		producto.setMarca(marca);
-		producto.setUbicacion(ubicacion);
+		producto.setStockMinimo(stockMinimo);
+		producto.setImpuesto(conceptoImpuesto);
 
 		if (producto.getId() == null) {
 			this.productoDAO.save(producto);

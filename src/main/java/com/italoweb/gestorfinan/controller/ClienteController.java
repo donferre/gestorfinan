@@ -14,6 +14,7 @@ import org.zkoss.zk.ui.event.Events;
 import org.zkoss.zk.ui.event.SerializableEventListener;
 import org.zkoss.zk.ui.ext.AfterCompose;
 import org.zkoss.zul.Button;
+import org.zkoss.zul.Datebox;
 import org.zkoss.zul.Div;
 import org.zkoss.zul.Listbox;
 import org.zkoss.zul.Listcell;
@@ -43,6 +44,8 @@ public class ClienteController extends Window implements AfterCompose {
     private Textbox text_nombre;
     private Textbox text_email;
     private Textbox text_telefono;
+    private Textbox text_nit;
+    private Datebox date_fechaCreacion;
 
     private ClienteDAO clienteDAO;
 
@@ -59,8 +62,6 @@ public class ClienteController extends Window implements AfterCompose {
     }
     
     public void cargarComponentes(){
-		//this.text_telefono = ComponentsUtil.getTextbox("Telefono", 1);
-		//this.text_telefono.addSclass("flnc_textbox");
     	this.text_telefono.setMaxlength(14);
 		this.text_telefono.setZclass("none");
 		this.text_telefono.setValue("Hola");
@@ -107,6 +108,7 @@ public class ClienteController extends Window implements AfterCompose {
         listitem.getChildren().clear();
         listitem.appendChild(new Listcell(cliente.getId().toString()));
         listitem.appendChild( new Listcell(cliente.getNombre()) );
+        listitem.appendChild( new Listcell(cliente.getNit()) );
         listitem.appendChild( new Listcell(cliente.getEmail()) );
         listitem.appendChild( new Listcell(cliente.getTelefono()) );
 
@@ -164,10 +166,12 @@ public class ClienteController extends Window implements AfterCompose {
 
     public void cargarWinClienteForm(Cliente cliente) {
         this.text_nombre.setValue("");
+        this.text_nit.setValue("");
         this.text_email.setValue("");
         this.text_telefono.setValue("");
         if(cliente != null) {
             this.text_nombre.setValue(cliente.getNombre());
+            this.text_nit.setValue(cliente.getNit());
             this.text_email.setValue(cliente.getEmail());
             this.text_telefono.setValue(cliente.getTelefono());
         }
@@ -176,23 +180,27 @@ public class ClienteController extends Window implements AfterCompose {
     }
 
     public void guardarWinClienteForm() {
-        String nombre = this.text_nombre.getValue().trim();
+    	String nombre = this.text_nombre.getValue().trim();
+        String nit = this.text_nit.getValue().trim();
         String email = this.text_email.getValue().trim();
         String telefono = this.text_telefono.getValue();
-        String mensaje = "Cliente Guardado Exitosamente";
-        
+        String mensaje = "Cliente Guardado Exitosamente.";
+        if (StringUtils.isBlank(nit)) {
+        	DialogUtil.showError("El nit es Obligatorio.");
+        	return;
+        }
         if (StringUtils.isBlank(nombre)) {
-        	DialogUtil.showError("El nombre es Obligatorio");
+        	DialogUtil.showError("El nombre es Obligatorio.");
         	return;
 		}
         
         if (StringUtils.isBlank(email)) {
-        	DialogUtil.showError("El E-mail es Obligatorio");
+        	DialogUtil.showError("El E-mail es Obligatorio.");
         	return;
 		}
         
         if (telefono.length() != 14) {
-        	DialogUtil.showError("El telefono no tiene el Obligatorio");
+        	DialogUtil.showError("El telefono es Obligatorio.");
         	return;
 		}
 
@@ -200,6 +208,7 @@ public class ClienteController extends Window implements AfterCompose {
         if(cliente == null) {
             cliente = new Cliente();
             cliente.setNombre(nombre);
+            cliente.setNit(nit);
             cliente.setEmail(email);
             cliente.setTelefono(telefono);
             cliente.setEstado(Estado.ACTIVO);
@@ -207,6 +216,7 @@ public class ClienteController extends Window implements AfterCompose {
             this.clienteDAO.save(cliente);
         }else {
             cliente.setNombre(nombre);
+            cliente.setNit(nit);
             cliente.setEmail(email);
             cliente.setTelefono(telefono);
             this.clienteDAO.update(cliente);

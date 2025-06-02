@@ -1,7 +1,5 @@
 package com.italoweb.gestorfinan.model;
 
-import java.util.Date;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -13,34 +11,32 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "clientes")
+@Table(name = "vendedor")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Cliente {
+public class Empleado {
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@Column(nullable = false)
+	@Column(name = "codigo", nullable = false, length = 50)
+	private String codigo;
+
+	@Column(name = "nombre", nullable = false, length = 255)
 	private String nombre;
 
-	@Column(nullable = false)
-	private String nit;
+	@Column(name = "identificacion", nullable = false)
+	private Integer identificacion;
 
-	@Column(unique = true, nullable = false)
+	@Column(name = "direccion")
+	private String direccion;
+
+	@Column(name = "email")
 	private String email;
 
-	@Column(nullable = false)
-	private String telefono;
-
-	@Column(nullable = false)
-	private Estado estado;
-
-	@Column(name = "tipo_proveedor")
-	private TipoProveedor tipoProveedor;
-
-	@Column(nullable = true)
-	private Date fechaCreacion;
+	@Column(name = "numTelefono", nullable = false )
+	private Integer numTelefono;
 
 }
