@@ -1,5 +1,7 @@
 package com.italoweb.gestorfinan.controller;
 
+import java.time.LocalDateTime;
+
 import org.zkoss.zk.ui.Executions;
 import org.zkoss.zk.ui.Session;
 import org.zkoss.zk.ui.Sessions;
@@ -12,11 +14,16 @@ import org.zkoss.zul.Messagebox;
 import org.zkoss.zul.Textbox;
 import org.zkoss.zul.Window;
 
+import com.italoweb.gestorfinan.model.SesionUsuario;
 import com.italoweb.gestorfinan.model.Usuario;
 import com.italoweb.gestorfinan.navigation.MenuModel;
+import com.italoweb.gestorfinan.repository.SesionUsuarioDAO;
 import com.italoweb.gestorfinan.repository.UsuarioDAO;
 import com.italoweb.gestorfinan.util.ComponentsUtil;
 import com.italoweb.gestorfinan.util.MD5Validator;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 
 public class LoginController extends Window implements AfterCompose {
 	
@@ -48,22 +55,50 @@ public class LoginController extends Window implements AfterCompose {
         Usuario usuario = this.usuarioDAO.findByUsername(username);
         if (usuario != null) {
             boolean validacion = MD5Validator.validateMD5(password, usuario.getPassword());
-            if (validacion){
-                Session session = Sessions.getCurrent();
-                session.setAttribute("usuario", usuario);
+            if (validacion) {
+                Session zkSession = Sessions.getCurrent();
+                HttpServletRequest request = (HttpServletRequest) Executions.getCurrent().getNativeRequest();
+                HttpSession httpSession = request.getSession();
+
+                // Guardar usuario en sesión
+                zkSession.setAttribute("usuario", usuario);
+
+                // Guardar sesión en base de datos
+                SesionUsuario sesion = new SesionUsuario();
+                sesion.setUsuario(usuario);
+                sesion.setHoraInicio(LocalDateTime.now());
+                sesion.setActivo(true);
+                sesion.setSessionId(httpSession.getId());
+
+                new SesionUsuarioDAO().registrarInicioSesion(sesion);
+
+                // Redirigir
                 String bookmark = MenuModel.bookmarkUrl("/inicio.zul");
-                Executions.sendRedirect("index.zul"+bookmark); // Página principal
-            }else{
-                Messagebox.show("contraseña incorrecta", "Error", Messagebox.OK, Messagebox.ERROR);
+                Executions.sendRedirect("index.zul" + bookmark);
+            } else {
+                Messagebox.show("Contraseña incorrecta", "Error", Messagebox.OK, Messagebox.ERROR);
             }
         } else {
             Messagebox.show("Usuario incorrecto", "Error", Messagebox.OK, Messagebox.ERROR);
         }
     }
 
+
     public static void logout() {
-        Session session = Sessions.getCurrent();
-        session.removeAttribute("usuario");
+        Session zkSession = Sessions.getCurrent();
+        HttpServletRequest request = (HttpServletRequest) Executions.getCurrent().getNativeRequest();
+        HttpSession httpSession = request.getSession();
+
+        try {
+            // Actualizar sesión como finalizada en base de datos
+            new SesionUsuarioDAO().actualizarFinSesion(httpSession.getId(), LocalDateTime.now());
+        } catch (Exception e) {
+            e.printStackTrace(); // O usar logger
+        }
+
+        // Limpiar sesión y redirigir
+        zkSession.removeAttribute("usuario");
+        zkSession.invalidate();
         Executions.sendRedirect("/");
     }
 }
