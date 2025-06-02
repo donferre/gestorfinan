@@ -2,7 +2,6 @@
 <zk xmlns:h="http://www.zkoss.org/2005/zk/native"
     xmlns:w="http://www.zkoss.org/2005/zk/client">
     <div id="win_apariencia" sclass="container-fluid" use="com.italoweb.gestorfinan.controller.AparienciaController">
-
         <style>
             .color-label {
             font-weight: bold;
@@ -64,15 +63,26 @@
                 </div>
             </div>
             <div sclass="row mb-4">
-                <div sclass="col-md-6">
-                    <label class="section-title">Logo de la Empresa</label>
-                    <fileupload id="fileUploadLogo" label="Cargar Logo" sclass="btn btn-outline-primary w-100"/>
-                    <textbox id="logo" visible="false"/>
-                </div>
-                <div sclass="col-md-6">
-                    <label class="section-title">Vista Previa</label>
-                    <div sclass="image-preview-container">
-                        <image id="logoPreview" sclass="preview-image"/>
+            	<div sclass="col-md-6">
+	            	<vlayout>
+		            	<div>
+		                    <label class="section-title">Logo de la Empresa</label>
+		                    <fileupload id="fileUploadLogo" label="Cargar Logo" sclass="btn btn-outline-primary w-100"/>
+		                    <textbox id="logo" visible="false"/>
+		                </div>
+		                <div>
+		                    <label class="section-title">Vista Previa</label>
+		                    <div sclass="image-preview-container">
+		                        <image id="logoPreview" sclass="preview-image"/>
+		                    </div>
+		                </div>
+	            	</vlayout>
+            	</div>
+            	<div sclass="col-md-6">
+                	<label class="section-title">Tamaño Logo:</label>
+                    <div class="input-group" width="100%">
+	                    <intbox id="logoSize" maxlength="3"/>
+	                    <span class="input-group-text">px</span>
                     </div>
                 </div>
             </div>

@@ -8,6 +8,7 @@ public class Apariencia {
     private String name;
     private String description;
     private String logo;
+    private int sizeLogo;
 
     public Apariencia() {
     }
@@ -65,4 +66,12 @@ public class Apariencia {
     public void setLogo(String logo) {
         this.logo = logo;
     }
+
+	public int getSizeLogo() {
+		return sizeLogo;
+	}
+
+	public void setSizeLogo(int sizeLogo) {
+		this.sizeLogo = sizeLogo;
+	}
 }

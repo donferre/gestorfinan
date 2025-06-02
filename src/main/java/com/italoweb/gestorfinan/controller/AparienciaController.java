@@ -14,11 +14,13 @@ import org.zkoss.zk.ui.event.UploadEvent;
 import org.zkoss.zk.ui.ext.AfterCompose;
 import org.zkoss.zul.Fileupload;
 import org.zkoss.zul.Image;
+import org.zkoss.zul.Intbox;
 import org.zkoss.zul.Textbox;
 import org.zkoss.zul.Window;
 
 import com.italoweb.gestorfinan.config.Apariencia;
 import com.italoweb.gestorfinan.config.AparienciaManager;
+import com.italoweb.gestorfinan.util.AppConstants;
 import com.italoweb.gestorfinan.util.ComponentsUtil;
 import com.italoweb.gestorfinan.util.DialogUtil;
 
@@ -29,9 +31,9 @@ public class AparienciaController extends Window implements AfterCompose {
     private AparienciaManager manager;
     private Image logoPreview;
     private Fileupload fileUploadLogo;
+    private Intbox logoSize;
 
     // Directorio en 'webapp' para los archivos accesibles
-    private static final String LOGO_DIR = System.getProperty("user.home") + "/gestorfinan/config/images";
     private static final String LOGO_FILENAME = "logo_app.jpg";
 
     @Override
@@ -114,6 +116,7 @@ public class AparienciaController extends Window implements AfterCompose {
                 this.name.setValue(apariencia.get(0).getName());
                 this.description.setValue(apariencia.get(0).getDescription());
                 this.logo.setValue(apariencia.get(0).getLogo());
+                this.logoSize.setValue(apariencia.get(0).getSizeLogo());
             }
     }
 
@@ -133,6 +136,7 @@ public class AparienciaController extends Window implements AfterCompose {
         String name = this.name.getValue().trim();
         String desc = this.description.getValue().trim();
         String logo = this.logo.getValue().trim();
+        int logoSize = this.logoSize.getValue();
 
         if (StringUtils.isBlank(name)) {
             DialogUtil.showError("El campo nombre es obligatorio");
@@ -149,6 +153,7 @@ public class AparienciaController extends Window implements AfterCompose {
         apariencia.setName(name);
         apariencia.setDescription(desc);
         apariencia.setLogo(logo);
+        apariencia.setSizeLogo(logoSize);
         if (listapariencia.size() > 0){
             listapariencia.set(0 , apariencia);
         }else {
@@ -159,7 +164,7 @@ public class AparienciaController extends Window implements AfterCompose {
     }
 
     private void guardarLogoEnDisco(byte[] data) throws IOException {
-        File dir = new File(LOGO_DIR);
+        File dir = new File(AppConstants.DIR_CONFIG_IMAGES);
         if (!dir.exists()) {
             dir.mkdirs();
         }
@@ -177,7 +182,7 @@ public class AparienciaController extends Window implements AfterCompose {
     }
 
     private void cargarLogoActual() {
-        File file = new File(LOGO_DIR, LOGO_FILENAME);
+        File file = new File(AppConstants.DIR_CONFIG_IMAGES, LOGO_FILENAME);
         if (file.exists()) {
             try {
                 byte[] data = Files.readAllBytes(file.toPath());
