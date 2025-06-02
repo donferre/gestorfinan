@@ -1,0 +1,68 @@
+<?taglib uri="http://www.zkoss.org/dsp/web/core" prefix="c"?>
+<zk xmlns:h="http://www.zkoss.org/2005/zk/native"
+    xmlns:w="http://www.zkoss.org/2005/zk/client">
+<div id="win_sessiones" sclass="container-fluid" use="com.italoweb.gestorfinan.controller.SesionUsuarioController">
+    <style>
+        .div_list_sessiones{
+            height: calc(100vh - 260px);
+        }
+        @media (max-width: 768px) {
+            .z-window {
+                width: 100% !important;
+                left: 0 !important;
+                top: 50px !important; /* Ajusta según necesites */
+            }
+        }
+    </style>
+    
+	<div class="py-3 py-lg-4">
+       <div class="row">
+	       <div class="col-lg-6">
+	       	<label class="page-title mb-0" value="Sessiones de Usuarios"></label>
+	       </div>
+	       <div class="col-lg-6">
+	           <div class="d-none d-lg-block">
+		            <hlayout sclass="breadcrumb m-0 float-end">
+				        <label sclass="breadcrumb-item" value="Menu"/>
+				        <label sclass="breadcrumb-separator" value="›"/>
+				        <label sclass="breadcrumb-item active" value="Sessiones"/>
+				    </hlayout>
+	            </div>
+	    	</div>
+        </div>
+    </div>
+    
+    <div class="row">
+    	<div class="col-12">
+        	<div class="card">
+            	<div class="card-body">
+	            	<div class="white_box_tittle list_header">
+			        	<label class="page-title mb-0" value="Listado de Sessiones"></label>
+                        <div class="box_right d-flex lms_block">
+                        	<div class="serach_field_2">
+                            	<div class="search_inner">
+                                	<div class="search_field">
+                                    	<textbox id="text_filtrar_sessiones" class="form-control" placeholder="Buscar contenido aqui..." />
+                                  	</div>
+                                    <h:button type="submit"> <h:i class="fa fa-search"></h:i> </h:button>
+                                 </div>
+                             </div>
+                  		</div>
+                  	</div>
+                  	<div class="div_list_sessiones">
+	                 	<listbox id="listbox_sessiones" nonselectableTags="*" emptyMessage="No hay Registros" vflex="1">
+	                    	<listhead>
+                            	<listheader label="Id" sort="auto"/>
+                            	<listheader label="Usuario" sort="auto"/>
+                            	<listheader label="Fecha Inicio" sort="auto"/>
+                            	<listheader label="Fecha Fin" sort="auto"/>
+                            	<listheader label="Estado" sort="auto"/>
+	                     	</listhead>
+	                 	</listbox>
+		           	</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</zk>

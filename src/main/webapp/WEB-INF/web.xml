@@ -13,6 +13,10 @@
 		<description>ZK listener for session cleanup</description>
 		<listener-class>org.zkoss.zk.ui.http.HttpSessionListener</listener-class>
 	</listener>
+	<listener>
+    	<listener-class>com.italoweb.gestorfinan.SessionListener</listener-class>
+	</listener>
+	
 	<servlet>
 		<description>ZK loader for ZUML pages</description>
 		<servlet-name>zkLoader</servlet-name>
