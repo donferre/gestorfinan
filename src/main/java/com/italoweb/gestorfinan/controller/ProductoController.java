@@ -25,7 +25,6 @@ import com.italoweb.gestorfinan.model.Categoria;
 import com.italoweb.gestorfinan.model.Impuesto;
 import com.italoweb.gestorfinan.model.Producto;
 import com.italoweb.gestorfinan.model.UnidadCompra;
-import com.italoweb.gestorfinan.model.poblacion.Ciudad;
 import com.italoweb.gestorfinan.repository.CategoriaDAO;
 import com.italoweb.gestorfinan.repository.ImpuestoDAO;
 import com.italoweb.gestorfinan.repository.ProductoDAO;
@@ -91,7 +90,7 @@ public class ProductoController extends Window implements AfterCompose {
 				if (impuestoSeleccionado != null) {
 					this.debx_porcentaje_impuesto.setValue(impuestoSeleccionado.getPorcentaje());
 				} else {
-					this.debx_porcentaje_impuesto.setValue(new BigDecimal(0)); // o BigDecimal.ZERO
+					this.debx_porcentaje_impuesto.setValue(new BigDecimal(0)); 
 				}
 			}
 		});
@@ -232,13 +231,11 @@ public class ProductoController extends Window implements AfterCompose {
 		this.text_marca.setValue("");
 
 		if (producto != null) {
-			System.out.println("INGRESO AQUI");
 			this.text_codigo.setValue(producto.getCodigo());
 			this.text_nombre.setValue(producto.getNombre());
 			this.text_descripcion.setValue(producto.getDescripcion());
 			ComponentsUtil.setComboboxValue(this.comb_impuesto, producto.getImpuesto());
 			this.debx_porcentaje_impuesto.setValue(producto.getImpuesto().getPorcentaje());
-			System.out.println("PORCENTAJE : " + producto.getImpuesto().getPorcentaje());
 			ComponentsUtil.setComboboxValue(this.comb_unidad_compra, producto.getUnidadCompra());
 			ComponentsUtil.setComboboxValue(this.comb_categoria, producto.getCategoria());
 			this.int_stock_minimo.setValue(producto.getStockMinimo());
@@ -267,11 +264,8 @@ public class ProductoController extends Window implements AfterCompose {
 
 		Integer stockMinimo = this.int_stock_minimo.getValue();
 		String marca = this.text_marca.getValue().trim();
-
+		 String mensaje = "Producto Guardado Exitosamente.";
 		// Validaciones
-		if (productoDAO.existeProductoConCodigo(codigo)) {
-			DialogUtil.showError("El código ingresado ya existe. Usar otro.");
-		}
 		if (StringUtils.isBlank(codigo)) {
 			DialogUtil.showError("El Código es obligatorio.");
 			return;
@@ -312,9 +306,11 @@ public class ProductoController extends Window implements AfterCompose {
 			this.productoDAO.save(producto);
 		} else {
 			this.productoDAO.update(producto);
+			 mensaje = "Producto Editado Exitosamente";
 		}
 
 		this.cargarListaProductos();
 		this.win_productos_form.setVisible(false);
+		 DialogUtil.showShortMessage("success", mensaje);
 	}
 }

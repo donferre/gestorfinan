@@ -1,0 +1,31 @@
+<vlayout xmlns="http://www.zkoss.org/2005/zul"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	apply="com.italoweb.gestorfinan.controller.SeleccionTab"
+	width="100%">
+
+	<style>
+		.nav_text { color: #696569; font-size: 20px; font-weight: bold;
+		}
+	</style>
+
+	<!-- Botones de navegación -->
+	<toolbar  id="toolbar">
+		<toolbarbutton label="Parametros Generales" />
+		<toolbarbutton label="Medios de Pago" />
+		<toolbarbutton label="Unidad de Compra" />
+		<toolbarbutton label="Categoria" />
+		<toolbarbutton label="Impuesto" />
+	</toolbar>
+
+
+	<!-- Breadcrumb -->
+	<hlayout>
+		<label sclass="nav_text">Pantalla actual:</label>
+		<label id="current_subpage" sclass="nav_text" />
+	</hlayout>
+
+	<separator height="10px" />
+
+	<!-- Panel dinámico de contenido -->
+	<include id="contentInclude" />
+</vlayout>

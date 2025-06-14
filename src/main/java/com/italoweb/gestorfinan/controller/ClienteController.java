@@ -14,7 +14,6 @@ import org.zkoss.zk.ui.event.Events;
 import org.zkoss.zk.ui.event.SerializableEventListener;
 import org.zkoss.zk.ui.ext.AfterCompose;
 import org.zkoss.zul.Button;
-import org.zkoss.zul.Datebox;
 import org.zkoss.zul.Div;
 import org.zkoss.zul.Listbox;
 import org.zkoss.zul.Listcell;
@@ -28,10 +27,12 @@ import com.italoweb.gestorfinan.components.Switch;
 import com.italoweb.gestorfinan.model.Cliente;
 import com.italoweb.gestorfinan.model.Estado;
 import com.italoweb.gestorfinan.model.PerfilUsuario;
+import com.italoweb.gestorfinan.model.TipoProveedor;
 import com.italoweb.gestorfinan.model.Usuario;
 import com.italoweb.gestorfinan.repository.ClienteDAO;
 import com.italoweb.gestorfinan.util.ComponentsUtil;
 import com.italoweb.gestorfinan.util.DialogUtil;
+import com.italoweb.gestorfinan.util.FormatoUtil;
 
 public class ClienteController extends Window implements AfterCompose {
     private static final long serialVersionUID = 7513499911306546485L;
@@ -45,7 +46,6 @@ public class ClienteController extends Window implements AfterCompose {
     private Textbox text_email;
     private Textbox text_telefono;
     private Textbox text_nit;
-    private Datebox date_fechaCreacion;
 
     private ClienteDAO clienteDAO;
 
@@ -63,8 +63,10 @@ public class ClienteController extends Window implements AfterCompose {
     
     public void cargarComponentes(){
     	this.text_telefono.setMaxlength(14);
+    	this.text_telefono.setValue("#");
+    	this.text_nombre.setMaxlength(30);
+    	this.text_nit.setMaxlength(20);
 		this.text_telefono.setZclass("none");
-		this.text_telefono.setValue("Hola");
 		this.text_telefono.setWidgetListener("onBind", "jq(this.getInputNode()).mask('(999) 999-9999');");
     }
 
@@ -184,6 +186,8 @@ public class ClienteController extends Window implements AfterCompose {
         String nit = this.text_nit.getValue().trim();
         String email = this.text_email.getValue().trim();
         String telefono = this.text_telefono.getValue();
+        TipoProveedor tipoProveedor = new TipoProveedor();
+        tipoProveedor.setId(1L);
         String mensaje = "Cliente Guardado Exitosamente.";
         if (StringUtils.isBlank(nit)) {
         	DialogUtil.showError("El nit es Obligatorio.");
@@ -193,7 +197,11 @@ public class ClienteController extends Window implements AfterCompose {
         	DialogUtil.showError("El nombre es Obligatorio.");
         	return;
 		}
-        
+        if (!FormatoUtil.esEmailValido(email)) {
+			DialogUtil.showError("El correo electrónico no es válido");
+			text_email.setFocus(true);
+			return;
+		}
         if (StringUtils.isBlank(email)) {
         	DialogUtil.showError("El E-mail es Obligatorio.");
         	return;
@@ -211,6 +219,7 @@ public class ClienteController extends Window implements AfterCompose {
             cliente.setNit(nit);
             cliente.setEmail(email);
             cliente.setTelefono(telefono);
+            cliente.setTipoProveedor(tipoProveedor);
             cliente.setEstado(Estado.ACTIVO);
             cliente.setFechaCreacion(new Date());
             this.clienteDAO.save(cliente);

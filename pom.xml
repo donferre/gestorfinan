@@ -11,7 +11,7 @@
 		<packname>-${project.version}-FL-${maven.build.timestamp}</packname>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<java.version>21</java.version>
-		<tomcat.home>/home/italopc/gestorfinan/tomcat</tomcat.home>
+		<tomcat.home>C:\Users\DonFerre\gestorfinan\tomcat</tomcat.home>
 	</properties>
 	<packaging>war</packaging>
 	<name>The gestionePro Project</name>
@@ -133,6 +133,13 @@
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
 			<version>3.14.0</version> <!-- Usa la última versión estable -->
+		</dependency>
+		
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<version>1.18.36</version> 
+			<scope>provided</scope>  
 		</dependency>
 	</dependencies>
 	<build>

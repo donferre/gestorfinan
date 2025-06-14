@@ -134,9 +134,16 @@
 			<artifactId>commons-lang3</artifactId>
 			<version>3.14.0</version> <!-- Usa la última versión estable -->
 		</dependency>
+		
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<version>1.18.36</version> 
+			<scope>provided</scope>  
+		</dependency>
 	</dependencies>
 	<build>
-		<finalName>${project.artifactId}</finalName>
+		<finalName>ROOT</finalName>
 		<plugins>
 			<!-- Compile java -->
 			<plugin>

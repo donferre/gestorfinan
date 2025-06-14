@@ -1,5 +1,7 @@
 package com.italoweb.gestorfinan.repository;
 
+import java.util.List;
+
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
@@ -11,6 +13,15 @@ import com.italoweb.gestorfinan.util.HibernateUtil;
 public class ProveedorDAO extends GenericDAOImpl<Proveedor, Long> {
 	public ProveedorDAO() {
 		super(Proveedor.class);
+	}
+	
+	public List<Proveedor> filtroEstadoActivo(Estado estado) {
+		try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+			String hql = "FROM Proveedor p WHERE p.estado = :estado";
+			Query<Proveedor> query = session.createQuery(hql, Proveedor.class);
+			query.setParameter("estado", estado);
+			return query.getResultList();
+		}
 	}
 
 	  public void actualizarEstado(Estado estado, Long id) {

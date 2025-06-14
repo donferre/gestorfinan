@@ -3,7 +3,6 @@ package com.italoweb.gestorfinan.repository;
 import java.util.List;
 
 import org.hibernate.Session;
-import org.hibernate.query.Query;
 
 import com.italoweb.gestorfinan.model.poblacion.Ciudad;
 import com.italoweb.gestorfinan.model.poblacion.Departamento;

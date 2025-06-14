@@ -43,7 +43,6 @@ public class ConceptoController extends Window implements AfterCompose {
     }
 
     public void cargarComponentes(){
-        //this.comb_tipo_movimiento.appendChild(ComponentsUtil.getComboitem("None", "", null));
         this.comb_tipo_movimiento.setAutocomplete(false);
         for(TipoMovimiento tipoMovimiento : TipoMovimiento.values()) {
             this.comb_tipo_movimiento.appendChild(ComponentsUtil.getComboitem(tipoMovimiento.getLabel(), null, tipoMovimiento));

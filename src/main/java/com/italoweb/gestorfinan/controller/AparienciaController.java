@@ -9,6 +9,7 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.zkoss.util.media.Media;
+import org.zkoss.zk.ui.Executions;
 import org.zkoss.zk.ui.event.Events;
 import org.zkoss.zk.ui.event.UploadEvent;
 import org.zkoss.zk.ui.ext.AfterCompose;
@@ -160,6 +161,7 @@ public class AparienciaController extends Window implements AfterCompose {
             listapariencia.add(apariencia);
         }
         manager.saveApariencia(listapariencia);
+        Executions.sendRedirect(null);
         DialogUtil.showShortMessage("success", "Configuracion Guardada exitosamente");
     }
 

@@ -1,7 +1,6 @@
 package com.italoweb.gestorfinan.model;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import jakarta.persistence.Column;
@@ -49,7 +48,7 @@ public class Producto {
 
 	@Column(name = "stock_minimo")
 	private Integer stockMinimo;
-
+	
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "impuesto_id", nullable = false)
 	private Impuesto impuesto;
@@ -60,7 +59,15 @@ public class Producto {
 	@Column(name = "fecha_final_desc")
 	private LocalDateTime  fechaFinalDescuento;
 	
+//	@Column(name = "fecha_vencimiento")
+//	private LocalDateTime  fechaVencimiento;
+	
 	@Column(name = "decuento")
 	private BigDecimal descuento;
 
+	@Column(name = "precio_compra")
+	private BigDecimal precioCompra;
+
+	@Column(name = "precio_venta")
+	private BigDecimal precioVenta;
 }

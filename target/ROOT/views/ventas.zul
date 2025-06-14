@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?page title="Pantalla de Ventas" contentType="text/html;charset=UTF-8"?>
+<zk xmlns:n="native">
+	<window title="Venta" border="normal" width="100%"
+		apply="com.italoweb.gestorfinan.controller.VentasController"
+		id="winVenta">
+
+		<vlayout spacing="20px" width="100%" style="padding: 20px">
+
+			<groupbox mold="3d" width="100%">
+				<caption label="Información del Cliente" />
+				<grid width="100%">
+					<columns>
+						<column label="Cliente" width="50%" />
+						<column label="Factura" width="50%" />
+					</columns>
+					<rows>
+						<row>
+							<combobox id="comb_cliente" width="60%"
+								placeholder="Seleccione el cliente." />
+							<textbox id="txt_numero_factura"
+								width="300px" placeholder="Número de factura." />
+						</row>
+						<row>
+							<button iconSclass="z-icon-plus-circle"
+								class="btn btn-success" label="Crear" id="btnAgregarCliente"
+								width="40%" />
+						</row>
+					</rows>
+				</grid>
+			</groupbox>
+
+			<groupbox mold="3d" width="100%">
+				<caption label="Detalle de Venta" />
+				<grid id="gridDetalle" width="100%">
+					<columns>
+						<column label="Código" />
+						<column label="Nombre Producto" />
+						<column label="Precio Venta" />
+						<column label="Cantidad" />
+						<column label="Impuesto (%)" />
+						<column label="Subtotal" />
+						<column label="Acciones" />
+					</columns>
+					<rows id="rowsDetalle"></rows>
+				</grid>
+				<button id="btnAgregarProducto"
+					label="Agregar Producto" />
+			</groupbox>
+
+			<groupbox mold="3d" width="100%">
+				<caption label="Totales" />
+				<grid width="50%">
+					<rows>
+						<row>
+							<label value="Total:"
+								style="font-weight: bold" />
+							<label id="lblTotal" value="$ 0.00"
+								style="font-weight: bold" />
+						</row>
+						<row>
+							<label value="Subtotal:" />
+							<label id="lblSubtotal" value="$ 0.00" />
+						</row>
+						<row>
+							<label value="IVA:" />
+							<label id="lblIVA" value="$ 0.00" />
+						</row>
+					</rows>
+				</grid>
+				<grid width="50%">
+					<rows id="rowsPorcentaje"></rows>
+				</grid>
+			</groupbox>
+			<groupbox mold="3d" width="100%">
+				<caption label="Fechas" />
+				<grid width="50%">
+					<rows>
+						<row>
+							<label value="Fecha de venta:"
+								style="font-weight: bold" />
+							<datebox id="date_fecha_venta"
+								format="dd/MM/yyyy" width="100%" />
+						</row>
+					</rows>
+				</grid>
+			</groupbox>
+			<groupbox mold="3d" width="100%">
+				<caption label="Forma de Pago y Vendedor" />
+				<grid width="100%">
+					<columns>
+						<column width="33%" />
+						<column width="33%" />
+						<column width="34%" />
+					</columns>
+					<rows>
+						<row>
+							<!-- Medio de Pago -->
+							<vlayout>
+								<label value="Medio de Pago" />
+								<combobox id="comb_medio_pago"
+									width="100%" placeholder="Seleccione el medio de pago" />
+
+								<hbox spacing="5px" width="100%">
+									<label value="Valor a devolver:"
+										width="40%" />
+									<decimalbox
+										id="debx_efectivo_a_devolver" width="90%"/>
+								</hbox>
+							</vlayout>
+
+							<!-- Vendedor -->
+							<vlayout>
+								<label value="Vendedor" />
+								<textbox id="text_usuario_vendedor"
+									width="100%" readonly="true" />
+							</vlayout>
+
+							<!-- Espacio libre / otro campo -->
+							<vlayout>
+								<!-- Vacío por ahora -->
+							</vlayout>
+						</row>
+					</rows>
+				</grid>
+			</groupbox>
+
+
+			<hbox spacing="20px" align="center" pack="end">
+				<button label="Procesar Venta" id="btnGuardarVenta" />
+			</hbox>
+		</vlayout>
+	</window>
+</zk>

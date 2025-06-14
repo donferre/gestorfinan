@@ -1,0 +1,65 @@
+<?taglib uri="http://www.zkoss.org/dsp/web/core" prefix="c"?>
+<zk xmlns:h="http://www.zkoss.org/2005/zk/native"
+    xmlns:w="http://www.zkoss.org/2005/zk/client">
+<div id="win_impuesto" sclass="container-fluid" use="com.italoweb.gestorfinan.controller.ImpuestoController">
+    <style>
+        .div_list_impuesto{
+            height: calc(100vh - 260px);
+        }
+        @media (max-width: 768px) {
+            .z-window {
+                width: 100% !important;
+                left: 0 !important;
+                top: 50px !important; 
+            }
+        }
+    </style>
+    <div class="mb-3">
+        <div sclass="mb-1">
+            <label sclass="h5" value="Impuesto"></label>
+        </div>
+        <vlayout>
+            <div class="input-group">
+                <textbox id="text_filtrar_impuesto" class="form-control" placeholder="Buscar" onChanging="win_impuesto.filtrarListImpuesto(event.value)"/>
+                <span class="input-group-btn">
+                    <button iconSclass="z-icon-plus-circle" class="btn btn-success" label="Crear"
+                            onClick="win_impuesto.cargarWinImpuestoForm(null)"/>
+                </span>
+            </div>
+            <div class="div_list_impuesto">
+                <listbox id="listbox_impuesto" nonselectableTags="*" emptyMessage="No hay Registros" vflex="1">
+                    <listhead>
+                        <listheader label="Código" sort="auto"/>
+                        <listheader label="Nombre" sort="auto"/>
+                        <listheader label="Porcentaje" sort="auto"/>
+                        <listheader />
+                    </listhead>
+                </listbox>
+            </div>
+        </vlayout>
+    </div>
+    <window id="win_impuesto_form" title="Impuesto" closable="true" width="30%" visible="false"
+            onClose="win_impuesto_form.setVisible(false); event.stopPropagation();">
+        <div class="row justify-content-center">
+            <div class="z-grid-border-less">
+                <div class="mb-3">
+                    <label value="Código" class="infodigg-grid-title"/>
+                    <textbox id="text_codigo" class="form-control"/>
+                </div>
+                <div class="mb-3">
+                    <label value="Nombre:" class="infodigg-grid-title"/>
+                    <textbox id="text_nombre" class="form-control"/>
+                </div>
+                <div class="mb-3">
+                    <label value="Porcentaje:" class="infodigg-grid-title"/>
+                    <decimalbox id="debx_porcentaje" class="form-control"/>
+                </div>
+                <div sclass="text-end">
+                    <button class="btn btn-primary" iconSclass="fa fa-floppy-o" label="Guardar"
+                            onClick="win_impuesto.guardarWinImpuestoForm();"/>
+                </div>
+            </div>
+        </div>
+    </window>
+</div>
+</zk>

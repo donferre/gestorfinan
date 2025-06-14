@@ -1,6 +1,8 @@
 package com.italoweb.gestorfinan.repository;
 
 
+import java.util.List;
+
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
@@ -32,5 +34,14 @@ public class ClienteDAO extends GenericDAOImpl<Cliente, Long> {
             throw e;
         }
     }
+    
+    public List<Cliente> filtroEstadoActivo(Estado estado) {
+		try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+			String hql = "FROM Cliente p WHERE p.estado = :estado";
+			Query<Cliente> query = session.createQuery(hql, Cliente.class);
+			query.setParameter("estado", estado);
+			return query.getResultList();
+		}
+	}
 
 }

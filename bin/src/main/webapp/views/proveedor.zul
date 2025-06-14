@@ -62,11 +62,13 @@
 						nonselectableTags="*" emptyMessage="No hay Registros">
 						<listhead>
 							<listheader label="NIT" sort="auto" />
-							<listheader label="Nombre" sort="auto"  />
+							<listheader label="Nombre" sort="auto" />
 							<listheader label="Email" sort="auto" />
 							<listheader label="Telefono" sort="auto" />
 							<listheader label="Ciudad" sort="auto" />
+							<listheader label="Persona de contacto" sort="auto" />
 							<listheader label="Direccion" sort="auto" />
+							<listheader label="Estado" sort="auto" />
 							<listheader label="Acciones" hflex="min" />
 						</listhead>
 					</listbox>
@@ -100,22 +102,30 @@
 							class="form-control" />
 					</div>
 					<div class="mb-3">
+						<label value="País:"
+							class="infodigg-grid-title" />
+						<combobox id="comb_pais" width="100%"
+							onChanging="win_proveedor.filtrarComboPais(event.value)"
+							onSelect="win_proveedor.onSelectPais()" />
+					</div>
+					<div class="mb-3">
+						<label value="Departamento:"
+							class="infodigg-grid-title" />
+						<combobox id="comb_departamento" width="100%"
+							onChanging="win_proveedor.filtrarComboDepartamento(event.value)"
+							onSelect="win_proveedor.onSelectDepartamento()" />
+					</div>
+					<div class="mb-3">
 						<label value="Ciudad:"
 							class="infodigg-grid-title" />
 						<combobox id="comb_ciudad" width="100%"
-							onSelect="win_proveedor.actualizarDepartamentoYPais()"
 							onChanging="win_proveedor.filtrarComboCiudad(event.value)" />
 					</div>
 					<div class="mb-3">
-						<label value="Departamento"
+						<label value="Persona de contacto:"
 							class="infodigg-grid-title" />
-						<textbox id="text_departamento"
-							class="form-control" disabled="true" />
-					</div>
-					<div class="mb-3">
-						<label value="Pais" class="infodigg-grid-title" />
-						<textbox id="text_pais" class="form-control"
-							disabled="true" />
+						<textbox id="text_persContacto"
+							class="form-control" />
 					</div>
 					<div class="mb-3">
 						<label value="Dirección:"

@@ -25,13 +25,14 @@ import org.zkoss.zul.Window;
 import com.italoweb.gestorfinan.components.Switch;
 import com.italoweb.gestorfinan.model.Estado;
 import com.italoweb.gestorfinan.model.Proveedor;
+import com.italoweb.gestorfinan.model.TipoProveedor;
 import com.italoweb.gestorfinan.model.poblacion.Ciudad;
 import com.italoweb.gestorfinan.model.poblacion.Departamento;
 import com.italoweb.gestorfinan.model.poblacion.Pais;
 import com.italoweb.gestorfinan.repository.PoblacionDAO;
 import com.italoweb.gestorfinan.repository.ProveedorDAO;
+import com.italoweb.gestorfinan.repository.TipoProveedorDAO;
 import com.italoweb.gestorfinan.util.ComponentsUtil;
-import com.italoweb.gestorfinan.util.Configuracion;
 import com.italoweb.gestorfinan.util.DialogUtil;
 
 public class ProveedorController extends Window implements AfterCompose {
@@ -46,19 +47,19 @@ public class ProveedorController extends Window implements AfterCompose {
 	private Textbox text_email;
 	private Textbox text_telefono;
 	private Combobox comb_ciudad;
+	private Combobox comb_tipo_proveedor;
 	private Textbox text_direccion;
 	private Textbox text_persContacto;
 	private Combobox comb_departamento;
 	private Combobox comb_pais;
 
-	private ProveedorDAO proveedorDAO;
-	private PoblacionDAO poblacionDAO;
+	private ProveedorDAO proveedorDAO = new ProveedorDAO();
+	private TipoProveedorDAO tipoProveedorDAO = new TipoProveedorDAO();
+	private PoblacionDAO poblacionDAO =  new PoblacionDAO();
 
 	@Override
 	public void afterCompose() {
 		ComponentsUtil.connectVariablesController(this);
-		this.proveedorDAO = new ProveedorDAO();
-		this.poblacionDAO = new PoblacionDAO();
 		this.cargarComponentes();
 		this.cargarListaProveedor();
 		this.isMobile();
@@ -72,12 +73,22 @@ public class ProveedorController extends Window implements AfterCompose {
 		this.text_telefono.setZclass("none");
 		this.text_telefono.setWidgetListener("onBind", "jq(this.getInputNode()).mask('(999) 999-9999');");
 		cargarComboboxPais();
+		cargarTipoProveedor();
 	}
 
 	public void cargarListaProveedor() {
 		this.text_filtro_proveedor.setValue("");
 		this.listbox_proveedor.getItems().clear();
 		proveedorDAO.findAll().forEach(this::createListitem);
+	}
+
+	public void cargarTipoProveedor() {
+		this.comb_tipo_proveedor.setAutocomplete(false);
+		List<TipoProveedor> listaTipoProveedor = this.tipoProveedorDAO.findAll();
+		for (TipoProveedor tipoProveedor : listaTipoProveedor) {
+			this.comb_tipo_proveedor
+					.appendChild(ComponentsUtil.getComboitem(tipoProveedor.getDescripcion(), null, tipoProveedor));
+		}
 	}
 
 	private void cargarComboboxPais() {
@@ -94,8 +105,6 @@ public class ProveedorController extends Window implements AfterCompose {
 		}
 
 		comb_pais.setSelectedItem(null);
-
-		// Limpia y deshabilita los combos hijos
 		deshabilitaSelPais();
 	}
 
@@ -254,6 +263,10 @@ public class ProveedorController extends Window implements AfterCompose {
 	public void filtrarComboDepartamento(String filter) {
 		filtrarCombo(this.comb_departamento, filter);
 	}
+	
+	public void filtrarComboTipo(String filter) {
+		filtrarCombo(this.comb_tipo_proveedor, filter);
+	}
 
 	public void filtrarCombo(Combobox combo, String filter) {
 		filter = filter.trim().toUpperCase();
@@ -283,7 +296,7 @@ public class ProveedorController extends Window implements AfterCompose {
 			text_email.setValue(proveedor.getEmail());
 			text_telefono.setValue(proveedor.getTelefono());
 			text_direccion.setValue(proveedor.getDireccion());
-
+			ComponentsUtil.setComboboxValue(this.comb_tipo_proveedor, proveedor.getTipoProveedor());
 			Ciudad ciudad = proveedor.getCiudad();
 			Departamento departamento = ciudad.getDepartamento();
 			Pais pais = departamento.getPais();
@@ -330,9 +343,10 @@ public class ProveedorController extends Window implements AfterCompose {
 		Ciudad ciudad = comb_ciudad.getSelectedItem() != null ? (Ciudad) comb_ciudad.getSelectedItem().getValue()
 				: null;
 		String direccion = this.text_direccion.getValue();
+		TipoProveedor tipoProveedor =this.comb_tipo_proveedor.getSelectedItem() != null
+				? this.comb_tipo_proveedor.getSelectedItem().getValue()
+				: null;
 		String mensaje = "Proveedor Guardado Exitosamente";
-		String tipoPorDefecto = Configuracion.get("proveedor.tipo_por_defecto");
-		System.out.println("TIPO: " + tipoPorDefecto);
 		// Validaciones
 		if (StringUtils.isBlank(nit)) {
 			DialogUtil.showError("El NIT es Obligatorio.");
@@ -362,6 +376,11 @@ public class ProveedorController extends Window implements AfterCompose {
 			DialogUtil.showError("La dirección es Obligatoria.");
 			return;
 		}
+		
+		if (tipoProveedor == null) {
+			DialogUtil.showError("El tipo es obligatorio.");
+			return;
+		}
 
 		Proveedor proveedor = (Proveedor) this.win_proveedor_form.getAttribute("CLIENTE");
 
@@ -372,7 +391,7 @@ public class ProveedorController extends Window implements AfterCompose {
 			proveedor.setEmail(email);
 			proveedor.setTelefono(telefono);
 			proveedor.setCiudad(ciudad);
-			proveedor.setTipoProveedor(tipoPorDefecto);
+			proveedor.setTipoProveedor(tipoProveedor);
 			proveedor.setDireccion(direccion);
 			proveedor.setPersonaContacto(personaContacto);
 			proveedor.setEstado(Estado.ACTIVO);
@@ -383,8 +402,10 @@ public class ProveedorController extends Window implements AfterCompose {
 			proveedor.setEmail(email);
 			proveedor.setTelefono(telefono);
 			proveedor.setCiudad(ciudad);
+			proveedor.setTipoProveedor(tipoProveedor);
 			proveedor.setDireccion(direccion);
 			proveedor.setPersonaContacto(personaContacto);
+			proveedor.setTipoProveedor(tipoProveedor);
 			this.proveedorDAO.update(proveedor);
 			mensaje = "Proveedor Editado Exitosamente";
 		}

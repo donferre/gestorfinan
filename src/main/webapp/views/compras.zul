@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?page title="Pantalla de Compras" contentType="text/html;charset=UTF-8"?>
+<zk xmlns:n="native">
+	<window title="Compra" border="normal" width="100%"
+		apply="com.italoweb.gestorfinan.controller.ComprasController"
+		id="winCompra">
+
+		<vlayout spacing="20px" width="100%" style="padding: 20px">
+
+			<groupbox mold="3d" width="100%">
+				<caption label="Información del Proveedor" />
+				<grid width="100%">
+					<columns>
+						<column label="Proveedor" width="50%" />
+						<column label="Factura" width="50%" />
+					</columns>
+					<rows>
+						<row>
+							<combobox id="comb_Proveedor" width="60%"
+								placeholder="Seleccione el proveedor." />
+
+							<textbox id="txtNumeroFactura"
+								placeholder="Número de factura." />
+						</row>
+					</rows>
+				</grid>
+			</groupbox>
+			<div style="overflow-x: auto; width: 100%;">
+				<groupbox mold="3d" width="100%">
+					<caption label="Detalle de Compra" />
+					<grid id="gridDetalle" width="100%">
+						<columns>
+							<column label="Código" />
+							<column label="Nombre Producto" />
+							<column label="Precio Compra" />
+							<column label="Precio Venta" />
+							<column label="Cantidad" />
+							<column label="Fecha de vencimiento" />
+							<column label="Total" />
+							<column label="Acciones" />
+						</columns>
+						<rows id="rowsDetalle"></rows>
+					</grid>
+					<button id="btnAgregarProducto"
+						label="Agregar Producto" />
+				</groupbox>
+			</div>
+			<groupbox mold="3d" width="100%">
+				<caption label="Totales" />
+				<grid width="50%">
+					<rows>
+						<row>
+							<label value="Total Compra:"
+								style="font-weight: bold" />
+							<label id="lblTotal" value="$ 0.00"
+								style="font-weight: bold" />
+						</row>
+					</rows>
+				</grid>
+			</groupbox>
+			<groupbox mold="3d" width="100%">
+				<caption label="Fechas" />
+				<grid width="50%">
+					<rows>
+						<row>
+							<label value="Fecha de Ingreso:"
+								style="font-weight: bold" />
+							<datebox id="date_fecha_ingreso"
+								format="dd/MM/yyyy" width="100%" />
+						</row>
+						<row>
+							<label value="Fecha de Pago:"
+								style="font-weight: bold" />
+							<datebox id="date_fecha_pago"
+								format="dd/MM/yyyy" width="100%" />
+						</row>
+					</rows>
+				</grid>
+			</groupbox>
+			<groupbox mold="3d" width="100%">
+				<caption label="Forma de Pago y Vendedor" />
+				<grid width="100%">
+					<columns>
+						<column label="Medio de Pago" width="50%" />
+						<column label="Usuario" width="50%" />
+					</columns>
+					<rows>
+						<row>
+							<combobox id="comb_medio_pago" width="40%"
+								placeholder="Seleccione el medio de pago" />
+							<textbox id="text_usuario_vendedor"
+								placeholder="Usuario." />
+						</row>
+					</rows>
+				</grid>
+			</groupbox>
+			<hbox spacing="20px" align="center" pack="end">
+				<button label="Registrar Compra" id="btnGuardar" />
+			</hbox>
+		</vlayout>
+	</window>
+</zk>

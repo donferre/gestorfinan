@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?taglib uri="http://www.zkoss.org/dsp/web/core" prefix="c"?>
+<zk>
+	<window id="win_cliente_form" title="Seleccionar Cliente"
+		border="normal" width="600px"
+		apply="com.italoweb.gestorfinan.controller.detalles.AgregarClienteController"
+		mode="modal">
+		<div class="row justify-content-center">
+			<div class="z-grid-border-less">
+				<div class="mb-3">
+					<label value="Nombre:" class="infodigg-grid-title" />
+					<textbox id="text_nombre_cliente"
+						class="form-control" placeholder="Ejemplo: Juan Pérez" />
+				</div>
+				<div class="mb-3">
+					<label value="Nit:" class="infodigg-grid-title" />
+					<textbox id="text_nit_cliente" class="form-control"
+						placeholder="Ejemplo: 123456789" />
+				</div>
+				<div class="mb-3">
+					<label value="Email:" class="infodigg-grid-title" />
+					<textbox id="text_email_cliente"
+						class="form-control" placeholder="Ejemplo: usuario@dominio.com" />
+				</div>
+				<div class="mb-3">
+					<label value="Teléfono:"
+						class="infodigg-grid-title" />
+					<textbox id="text_telefono_cliente"
+						class="form-control" placeholder="Ejemplo: (999) 999-9999" />
+				</div>
+				<div sclass="text-end">
+					<button class="btn btn-primary"
+						iconSclass="fa fa-floppy-o" label="Guardar"
+						id="guardarWinClienteForm" />
+					<button id="btnCancelar" label="Cancelar" />	
+				</div>
+			</div>
+		</div>
+	</window>
+</zk>

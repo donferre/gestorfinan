@@ -7,6 +7,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -37,7 +39,8 @@ public class Cliente {
 	@Column(nullable = false)
 	private Estado estado;
 
-	@Column(name = "tipo_proveedor")
+	@ManyToOne(optional = false)
+	@JoinColumn(name = "tipo_proveedor_id", nullable = false)
 	private TipoProveedor tipoProveedor;
 
 	@Column(nullable = true)

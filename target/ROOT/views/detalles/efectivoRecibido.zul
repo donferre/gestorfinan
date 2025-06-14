@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?taglib uri="http://www.zkoss.org/dsp/web/core" prefix="c"?>
+<zk>
+	<window id="win_valida_efectivo" title="Ingresa cantidad de dinero"
+		border="normal" width="600px"
+		apply="com.italoweb.gestorfinan.controller.detalles.EfectivoRecibidoController"
+		mode="modal">
+		<div class="mb-3">
+			<label value="Efectivo recibido:"
+				class="infodigg-grid-title" />
+			<decimalbox id="debx_efectivo" class="form-control" />
+		</div>
+		<separator />
+		<hbox align="center" pack="end">
+			<button id="btnAceptar" label="Aceptar" />
+			<button id="btnCancelar" label="Cancelar" />
+		</hbox>
+	</window>
+</zk>

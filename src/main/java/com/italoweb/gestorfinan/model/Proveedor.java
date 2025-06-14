@@ -10,7 +10,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -31,9 +30,9 @@ public class Proveedor {
 	@Column(name = "nit", nullable = false, unique = true)
 	private String nit;
 	
-	@Column(nullable = false, length = 1)
-	@Pattern(regexp = "^[NJ]$", message = "El tipo de proveedor debe ser 'N' o 'J'")
-	private String tipoProveedor;
+	@ManyToOne(optional = false)
+	@JoinColumn(name = "tipo_proveedor_id", nullable = false)
+	private TipoProveedor tipoProveedor;
 
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "ciudad_id", nullable = false) 

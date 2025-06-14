@@ -12,7 +12,7 @@ public class SesionUsuario {
     private Long id;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "id_usuario") // este es el cambio correcto
+    @JoinColumn(name = "id_usuario")
     private Usuario usuario;
 
     @Column(name = "hora_inicio", nullable = false)

@@ -1140,4 +1140,12 @@ public class ComponentsUtil implements Serializable {
 		}
 		return result;
 	}
+	
+	public static int safeParse(String val, int fallback) {
+	    try {
+	        return (val != null && val.matches("\\d+")) ? Integer.parseInt(val) : fallback;
+	    } catch (Exception e) {
+	        return fallback;
+	    }
+	}
 }
