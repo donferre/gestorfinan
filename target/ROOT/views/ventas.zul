@@ -105,7 +105,7 @@
 									<label value="Valor a devolver:"
 										width="40%" />
 									<decimalbox
-										id="debx_efectivo_a_devolver" width="90%"/>
+										id="debx_efectivo_a_devolver" width="90%" readonly="true" />
 								</hbox>
 							</vlayout>
 
@@ -116,10 +116,7 @@
 									width="100%" readonly="true" />
 							</vlayout>
 
-							<!-- Espacio libre / otro campo -->
-							<vlayout>
-								<!-- Vacío por ahora -->
-							</vlayout>
+							<vlayout></vlayout>
 						</row>
 					</rows>
 				</grid>

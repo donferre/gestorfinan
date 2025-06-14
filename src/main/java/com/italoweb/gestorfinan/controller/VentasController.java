@@ -617,6 +617,7 @@ public class VentasController extends GenericForwardComposer<Component> {
 		lblTotal.setValue("$ 0.00");
 		lblSubtotal.setValue("$ 0.00");
 		lblIVA.setValue("$ 0.00");
+		debx_efectivo_a_devolver.setValue("$ 0.00");
 	}
 
 }
