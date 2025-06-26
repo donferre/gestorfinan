@@ -13,7 +13,6 @@ import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
-
 import com.italoweb.gestorfinan.model.Cliente;
 import com.italoweb.gestorfinan.model.factura.FacturaImpuesto;
 import com.italoweb.gestorfinan.util.FacturaHelper;
@@ -49,214 +48,291 @@ public class GeneradorFacturaController {
 			String telefonoEmpresa, String emailEmpresa, Cliente cliente, String fecha, String numeroFactura,
 			List<ItemFactura> items, BigDecimal subTotal, BigDecimal totalIVA, BigDecimal totalDcto,
 			BigDecimal totalVenta, String vendedor, List<FacturaImpuesto> impuestos) throws IOException {
+		final PDRectangle PAGE_SIZE = PDRectangle.A4;
+		final float PAGE_W = PAGE_SIZE.getWidth();
+		final float PAGE_H = PAGE_SIZE.getHeight();
+		final float M = 30; // margen
+		final float LEAD = 11; // interlínea
+		final float FONT_TITLE = 11;
+		final float FONT_HEADER = 7;
+		final float FONT_CELL = 6;
 
-		final float PAGE_WIDTH = PDRectangle.LETTER.getWidth();
-		final float PAGE_HEIGHT = PDRectangle.LETTER.getHeight() / 2;
-		final float LOGO_WIDTH = 180;
-		final float LOGO_HEIGHT = 50;
+		PDDocument doc = new PDDocument();
+		try {
+			// 1) Simular altura del header
+			PDPage dummyPage = new PDPage(PAGE_SIZE);
+			float headerH = drawHeader(null, dummyPage, doc, 0, new HeaderData(nombreEmpresa, nitEmpresa,
+					direccionEmpresa, telefonoEmpresa, emailEmpresa, numeroFactura, fecha, cliente));
+			float footerEst = (impuestos.size() + 4) * LEAD + LEAD;
+			float usable = PAGE_H - 2 * M - headerH - footerEst;
+			int maxItems = Math.max(1, (int) (usable / (FONT_CELL + 3)));
 
-		File archivo = new File(System.getProperty("java.io.tmpdir"), nombreArchivo);
-
-		try (PDDocument documento = new PDDocument()) {
-			float marginLeft = 30;
-			float marginRight = 30;
-			float marginTop = 20;
-			float marginBottom = 30;
-			float leading = 14;
-			PDType1Font fuente = PDType1Font.HELVETICA;
-			int maxItemsPerPage = 6;
-
-			int totalPages = (int) Math.ceil((double) items.size() / maxItemsPerPage);
+			int totalPages = (int) Math.ceil((double) items.size() / maxItems);
 
 			for (int pageIndex = 0; pageIndex < totalPages; pageIndex++) {
-				PDPage pagina = new PDPage(new PDRectangle(PAGE_WIDTH, PAGE_HEIGHT));
-				documento.addPage(pagina);
+				PDPage page = new PDPage(PAGE_SIZE);
+				doc.addPage(page);
+				try (PDPageContentStream c = new PDPageContentStream(doc, page)) {
+					// 2) Dibujar cabecera real y obtener yStart
+					float yStart = drawHeader(c, page, doc, pageIndex, new HeaderData(nombreEmpresa, nitEmpresa,
+							direccionEmpresa, telefonoEmpresa, emailEmpresa, numeroFactura, fecha, cliente));
 
-				try (PDPageContentStream contenido = new PDPageContentStream(documento, pagina)) {
-					float y = PAGE_HEIGHT - marginTop;
-
-					if (pageIndex == 0) {
-						String logoPath = FacturaHelper.obtenerRutaLogo();
-						File logoFile = new File(logoPath);
-						if (logoFile.exists()) {
-							PDImageXObject logoImage = PDImageXObject.createFromFile(logoFile.getAbsolutePath(),
-									documento);
-							float xLogo = (PAGE_WIDTH - LOGO_WIDTH) / 2;
-							contenido.drawImage(logoImage, xLogo, y - LOGO_HEIGHT, LOGO_WIDTH, LOGO_HEIGHT);
-							y -= LOGO_HEIGHT + 5;
-						}
-
-						float xEmpresa = marginLeft;
-						contenido.beginText();
-						contenido.setFont(PDType1Font.HELVETICA_BOLD, 14);
-						contenido.newLineAtOffset(xEmpresa, y);
-						contenido.showText(nombreEmpresa);
-						contenido.endText();
-
-						y -= 14;
-						contenido.setFont(fuente, 10);
-						String[] datosEmpresa = { "NIT: " + nitEmpresa, "Dirección: " + direccionEmpresa,
-								"Teléfono: " + telefonoEmpresa, "E-mail: " + emailEmpresa, "N°: " + numeroFactura,
-								"Fecha: " + fecha };
-
-						for (String linea : datosEmpresa) {
-							contenido.beginText();
-							contenido.newLineAtOffset(xEmpresa, y);
-							contenido.showText(linea);
-							contenido.endText();
-							y -= leading;
-						}
-
-						// FACTURADA A
-						contenido.setNonStrokingColor(0, 112, 192);
-						contenido.addRect(marginLeft, y - 1, 250, 15);
-						contenido.fill();
-
-						contenido.setNonStrokingColor(255, 255, 255);
-						contenido.beginText();
-						contenido.setFont(PDType1Font.HELVETICA_BOLD, 10);
-						contenido.newLineAtOffset(marginLeft + 5, y + 2);
-						contenido.showText("FACTURADA A:");
-						contenido.endText();
-
-						y -= 18;
-						contenido.setNonStrokingColor(0, 0, 0);
-						contenido.beginText();
-						contenido.setFont(fuente, 10);
-						contenido.newLineAtOffset(marginLeft + 5, y);
-						contenido.showText("Nombre: " + (cliente.getNombre() != null ? cliente.getNombre() : "N/A"));
-						contenido.newLineAtOffset(0, -leading);
-						contenido.showText("NIT: " + (cliente.getNit() != null ? cliente.getNit() : "N/A"));
-						contenido.newLineAtOffset(0, -leading);
-						contenido.showText("Correo: " + (cliente.getEmail() != null ? cliente.getEmail() : "N/A"));
-						contenido.newLineAtOffset(0, -leading);
-						contenido.showText(
-								"Teléfono: " + (cliente.getTelefono() != null ? cliente.getTelefono() : "N/A"));
-						contenido.endText();
-
-						y -= 45;
-					} else {
-						y -= 10;
+					// 3) Configurar columnas proporcionalmente
+					float usableW = PAGE_W - 2 * M;
+					float[] pct = { 0.10f, 0.15f, 0.30f, 0.10f, 0.15f, 0.10f, 0.10f };
+					float[] colW = new float[pct.length], colX = new float[pct.length + 1];
+					colX[0] = M;
+					for (int i = 0; i < pct.length; i++) {
+						colW[i] = usableW * pct[i];
+						colX[i + 1] = colX[i] + colW[i];
 					}
+					float cellPadding = 6;
+					float rowH = FONT_CELL + cellPadding * 2;
 
-					float tableTopY = y;
-					float rowHeight = 15;
-					float tableWidth = PAGE_WIDTH - marginLeft - marginRight;
-					float[] colWidths = { 50, 100, 150, 40, 70, 70, 60 };
-					float[] colPositions = new float[colWidths.length + 1];
-					colPositions[0] = marginLeft;
-					for (int i = 0; i < colWidths.length; i++) {
-						colPositions[i + 1] = colPositions[i] + colWidths[i];
+					// 4) Dibuja encabezado de tabla
+					c.setNonStrokingColor(0, 112, 192);
+					c.addRect(M, yStart - rowH, usableW, rowH);
+					c.fill();
+					c.setNonStrokingColor(255, 255, 255);
+					c.beginText();
+					c.setFont(PDType1Font.HELVETICA_BOLD, FONT_HEADER);
+					c.newLineAtOffset(M + 2, yStart - rowH + 2);
+					String[] hdrs = { "CÓDIGO", "NOMBRE", "DESCRIP.", "CANT", "PRECIO", "DCTO", "VALOR" };
+					for (int i = 0; i < hdrs.length; i++) {
+						c.showText(hdrs[i]);
+						if (i < hdrs.length - 1)
+							c.newLineAtOffset(colW[i], 0);
 					}
+					c.endText();
 
-					contenido.setNonStrokingColor(0, 112, 192);
-					contenido.addRect(marginLeft, y, tableWidth, rowHeight);
-					contenido.fill();
+					// 5) Dibuja filas
+					int start = pageIndex * maxItems;
+					int end = Math.min(start + maxItems, items.size());
+					// AHORA: dejamos un gap igual a la interlínea (LEAD)
+					float curY = yStart - rowH - LEAD - cellPadding;
 
-					contenido.setNonStrokingColor(255, 255, 255);
-					contenido.beginText();
-					contenido.setFont(PDType1Font.HELVETICA_BOLD, 9);
-					contenido.newLineAtOffset(marginLeft + 3, y + 4);
-					contenido.showText("CÓDIGO");
-					contenido.newLineAtOffset(colWidths[0], 0);
-					contenido.showText("NOMBRE");
-					contenido.newLineAtOffset(colWidths[1], 0);
-					contenido.showText("DESCRIPCIÓN");
-					contenido.newLineAtOffset(colWidths[2], 0);
-					contenido.showText("CANT");
-					contenido.newLineAtOffset(colWidths[3], 0);
-					contenido.showText("PRECIO");
-					contenido.newLineAtOffset(colWidths[4], 0);
-					contenido.showText("DCTO");
-					contenido.newLineAtOffset(colWidths[5], 0);
-					contenido.showText("VALOR");
-					contenido.endText();
-
-					y -= rowHeight;
-
-					int start = pageIndex * maxItemsPerPage;
-					int end = Math.min(start + maxItemsPerPage, items.size());
-					float currentY = y;
+					c.setNonStrokingColor(0, 0, 0);
+					c.setFont(PDType1Font.HELVETICA, FONT_CELL);
 
 					for (int i = start; i < end; i++) {
-						ItemFactura item = items.get(i);
-						contenido.setNonStrokingColor(0, 0, 0);
-						contenido.beginText();
-						contenido.setFont(fuente, 8);
-						contenido.newLineAtOffset(marginLeft + 3, currentY + 4);
-						contenido.showText(item.codigo);
-						contenido.newLineAtOffset(colWidths[0], 0);
-						contenido.showText(truncar(item.nombre.toUpperCase(), 25));
-						contenido.newLineAtOffset(colWidths[1], 0);
-						contenido.showText(truncar(item.descripcion.toUpperCase(), 25));
-						contenido.newLineAtOffset(colWidths[2], 0);
-						contenido.showText(String.valueOf(item.cantidad));
-						contenido.newLineAtOffset(colWidths[3], 0);
-						contenido.showText(FormatoUtil.formatDecimal(BigDecimal.valueOf(item.precioUnitario)));
-						contenido.newLineAtOffset(colWidths[4], 0);
-						contenido.showText(FormatoUtil.formatDecimal(BigDecimal.valueOf(item.descuento)) + "%");
-						// Total
-						BigDecimal qty = BigDecimal.valueOf(item.cantidad);
-						BigDecimal unitPrice = BigDecimal.valueOf(item.precioUnitario);
-						BigDecimal discountPct = BigDecimal.valueOf(item.descuento).divide(BigDecimal.valueOf(100), 4,
-								RoundingMode.HALF_UP);
-
-						BigDecimal bruto = unitPrice.multiply(qty);
-						BigDecimal total = bruto.multiply(BigDecimal.ONE.subtract(discountPct)).setScale(2,
-								RoundingMode.HALF_UP);
-						contenido.newLineAtOffset(colWidths[5], 0);
-						contenido.showText(FormatoUtil.formatDecimal(total));
-						contenido.endText();
-						currentY -= rowHeight;
-					}
-
-					for (int i = 0; i <= (end - start) + 1; i++) {
-						float lineY = tableTopY - i * rowHeight;
-						contenido.moveTo(marginLeft, lineY);
-						contenido.lineTo(marginLeft + tableWidth, lineY);
-					}
-					contenido.stroke();
-
-					for (float x : colPositions) {
-						contenido.moveTo(x, tableTopY);
-						contenido.lineTo(x, currentY + rowHeight);
-					}
-					contenido.stroke();
-
-					if (pageIndex == totalPages - 1) {
-						float espacioTotales = (impuestos.size() + 4) * leading;
-						float yStart = y - 10;
-						if (yStart - espacioTotales < marginBottom) {
-							PDPage paginaTotales = new PDPage(new PDRectangle(PAGE_WIDTH, PAGE_HEIGHT));
-							documento.addPage(paginaTotales);
-							try (PDPageContentStream contenidoTotales = new PDPageContentStream(documento,
-									paginaTotales)) {
-								dibujarTotalesConImpuestos(contenidoTotales, marginLeft, PAGE_HEIGHT - marginTop,
-										subTotal, impuestos, totalDcto, totalVenta);
-							}
-						} else {
-							dibujarTotalesConImpuestos(contenido, marginLeft, yStart, subTotal, impuestos, totalDcto,
-									totalVenta);
+						ItemFactura it = items.get(i);
+						c.beginText();
+						c.newLineAtOffset(M + 2, curY + 2);
+						String[] vals = { it.codigo, truncar(it.nombre, 20), truncar(it.descripcion, 20),
+								String.valueOf(it.cantidad),
+								FormatoUtil.formatDecimal(BigDecimal.valueOf(it.precioUnitario)),
+								FormatoUtil.formatDecimal(BigDecimal.valueOf(it.descuento)) + "%",
+								FormatoUtil.formatDecimal(
+										BigDecimal.valueOf(it.cantidad).multiply(BigDecimal.valueOf(it.precioUnitario))
+												.multiply(BigDecimal.ONE.subtract(BigDecimal.valueOf(it.descuento)
+														.divide(BigDecimal.valueOf(100), 4, RoundingMode.HALF_UP)))
+												.setScale(2, RoundingMode.HALF_UP)) };
+						for (int j = 0; j < vals.length; j++) {
+							c.showText(vals[j]);
+							if (j < vals.length - 1)
+								c.newLineAtOffset(colW[j], 0);
 						}
+						c.endText();
+						curY -= rowH;
 					}
-					contenido.beginText();
-					contenido.setFont(fuente, 9);
-					String textoPagina = "Pág. " + (pageIndex + 1) + " de " + totalPages;
-					float textoWidth = fuente.getStringWidth(textoPagina) / 1000 * 9;
-					contenido.newLineAtOffset(PAGE_WIDTH - marginRight - textoWidth, marginBottom - 10);
-					contenido.showText(textoPagina);
-					contenido.endText();
+
+					// 6) Líneas de la tabla
+					c.setLineWidth(0.3f);
+					for (int i = 0; i <= (end - start) + 1; i++) {
+						float ly = yStart - i * rowH;
+						c.moveTo(M, ly);
+						c.lineTo(M + usableW, ly);
+					}
+					for (float x : colX) {
+						c.moveTo(x, yStart);
+						c.lineTo(x, curY + rowH);
+					}
+					c.stroke();
+
+					// 7) Totales en última página, misma fuente que celdas
+					if (pageIndex == totalPages - 1) {
+						dibujarTotalesConImpuestosA4(c, M, curY - LEAD, usableW, subTotal, impuestos, totalDcto,
+								totalVenta, PDType1Font.HELVETICA, FONT_CELL, LEAD);
+					}
+
+					// 8) Pie de página
+					c.beginText();
+					c.setFont(PDType1Font.HELVETICA, FONT_HEADER);
+					String pg = "Pág. " + (pageIndex + 1) + " de " + totalPages;
+					float pw = PDType1Font.HELVETICA.getStringWidth(pg) / 1000 * FONT_HEADER;
+					c.newLineAtOffset(PAGE_W - M - pw, M / 2);
+					c.showText(pg);
+					c.endText();
 				}
 			}
-			documento.save(archivo);
+
+			File out = new File(System.getProperty("java.io.tmpdir"), nombreArchivo);
+			doc.save(out);
+			return out;
+		} finally {
+			doc.close();
 		}
-		return archivo;
 	}
 
-	private String truncar(String texto, int maxLength) {
-		if (texto == null)
+	private static class HeaderData {
+		String emp, nit, dir, tel, mail, numFac, fecha;
+		Cliente cli;
+
+		HeaderData(String e, String n, String d, String t, String m, String nf, String f, Cliente c) {
+			emp = e;
+			nit = n;
+			dir = d;
+			tel = t;
+			mail = m;
+			numFac = nf;
+			fecha = f;
+			cli = c;
+		}
+	}
+
+	/**
+	 * Dibuja logo, datos empresa y cliente. Devuelve Y para iniciar la tabla. Si
+	 * 'c' es null, solo simula altura.
+	 */
+	private float drawHeader(PDPageContentStream c, PDPage page, PDDocument doc, int pageIndex, HeaderData hd)
+			throws IOException {
+		float pageH = page.getMediaBox().getHeight();
+		float pageW = page.getMediaBox().getWidth();
+		final float M = 30, LEAD = 11, T = 11, H = 7;
+
+		// Simulación
+		if (c == null) {
+			return 50 + 5 // logo
+					+ T + 2 + 6 * LEAD // empresa
+					+ 18 + 4 * LEAD + 5 // facturada a + cliente
+					+ 10; // gap
+		}
+
+		float y = pageH - M;
+		if (pageIndex == 0) {
+			// logo centrado
+			File logoFile = new File(FacturaHelper.obtenerRutaLogo());
+			if (logoFile.exists()) {
+				PDImageXObject logo = PDImageXObject.createFromFile(logoFile.getAbsolutePath(), doc);
+				float lw = 180, lh = 50;
+				c.drawImage(logo, (pageW - lw) / 2, y - lh, lw, lh);
+			}
+			y -= 55;
+
+			// nombre empresa
+			c.beginText();
+			c.setFont(PDType1Font.HELVETICA_BOLD, T);
+			c.newLineAtOffset(M, y);
+			c.showText(hd.emp);
+			c.endText();
+			y -= T + 2;
+
+			// datos empresa
+			c.setFont(PDType1Font.HELVETICA, H);
+			for (String line : new String[] { "NIT: " + hd.nit, "Dirección: " + hd.dir, "Tel: " + hd.tel,
+					"E-mail: " + hd.mail, "Factura N°: " + hd.numFac, "Fecha: " + hd.fecha }) {
+				c.beginText();
+				c.newLineAtOffset(M, y);
+				c.showText(line);
+				c.endText();
+				y -= LEAD;
+			}
+			// <-- gap extra para que la Fecha no sea tapada:
+			y -= 4;
+
+			// bloque FACTURADA A
+			c.setNonStrokingColor(0, 112, 192);
+			c.addRect(M, y - 1, 250, 15);
+			c.fill();
+			c.setNonStrokingColor(255, 255, 255);
+			c.beginText();
+			c.setFont(PDType1Font.HELVETICA_BOLD, H);
+			c.newLineAtOffset(M + 5, y + 2);
+			c.showText("FACTURADA A:");
+			c.endText();
+			y -= 18;
+
+			// datos cliente
+			c.setNonStrokingColor(0, 0, 0);
+			c.setFont(PDType1Font.HELVETICA, H);
+			for (String line : new String[] { "Nombre: " + hd.cli.getNombre(), "NIT: " + hd.cli.getNit(),
+					"Correo: " + hd.cli.getEmail(), "Tel: " + hd.cli.getTelefono() }) {
+				c.beginText();
+				c.newLineAtOffset(M + 5, y);
+				c.showText(line);
+				c.endText();
+				y -= LEAD;
+			}
+			y -= 5;
+		} else {
+			y -= 10;
+		}
+
+		return y;
+	}
+
+	/**
+	 * Dibuja totales e impuestos con misma fuente y tamaño que celdas.
+	 */
+	private void dibujarTotalesConImpuestosA4(PDPageContentStream c, float xStart, float yStart, float totalWidth,
+			BigDecimal subTotal, List<FacturaImpuesto> impuestos, BigDecimal totalDcto, BigDecimal totalVenta,
+			PDType1Font font, float fontSize, float lead) throws IOException {
+		float y = yStart;
+
+		// impuestos primero
+		for (FacturaImpuesto imp : impuestos) {
+			if (imp.getPorcentaje().compareTo(BigDecimal.ZERO) == 0 || imp.getValor().compareTo(BigDecimal.ZERO) == 0)
+				continue;
+			String lbl = "IVA " + imp.getPorcentaje().setScale(2, RoundingMode.HALF_UP) + "%:";
+			String val = FormatoUtil.formatDecimal(imp.getValor());
+
+			c.beginText();
+			c.setFont(font, fontSize);
+			c.newLineAtOffset(xStart, y);
+			c.showText(lbl);
+			c.endText();
+
+			float w = font.getStringWidth(val) / 1000 * fontSize;
+			c.beginText();
+			c.setFont(font, fontSize);
+			c.newLineAtOffset(xStart + totalWidth - w, y);
+			c.showText(val);
+			c.endText();
+
+			y -= lead;
+		}
+
+		// SUBTOTAL, DESCUENTO, TOTAL
+		String[] et = { "SUBTOTAL:", "DESCUENTO:", "TOTAL:" };
+		BigDecimal[] vs = { subTotal, totalDcto, totalVenta };
+
+		for (int i = 0; i < et.length; i++) {
+			if (i == 1 && vs[i].compareTo(BigDecimal.ZERO) == 0)
+				continue;
+			String lbl = et[i];
+			String val = FormatoUtil.formatDecimal(vs[i]);
+
+			c.beginText();
+			c.setFont(font, fontSize);
+			c.newLineAtOffset(xStart, y);
+			c.showText(lbl);
+			c.endText();
+
+			float w = font.getStringWidth(val) / 1000 * fontSize;
+			c.beginText();
+			c.setFont(font, fontSize);
+			c.newLineAtOffset(xStart + totalWidth - w, y);
+			c.showText(val);
+			c.endText();
+
+			y -= lead;
+		}
+	}
+
+	private String truncar(String txt, int len) {
+		if (txt == null)
 			return "";
-		return texto.length() > maxLength ? texto.substring(0, maxLength) : texto;
+		return txt.length() > len ? txt.substring(0, len) : txt;
 	}
 
 	public File generarFacturaTicket80mm(String nombreArchivo, String nombreEmpresa, String nitEmpresa,
@@ -494,10 +570,40 @@ public class GeneradorFacturaController {
 				contenido.stroke();
 				y -= (FONT_SIZE_TITULO + 6);
 
-				// ===== Totales finales =====
+				// ===== Totales finales con impuestos al principio =====
 				float labelX = margin;
 				float valueX = margin + width;
-				// Subtotal
+
+				// 1) Dibuja todas las líneas de IVA primero, usando yPos
+				float yPos = y - (FONT_SIZE_TITULO + 2);
+				for (FacturaImpuesto imp : impuestos) {
+					if (imp.getPorcentaje().compareTo(BigDecimal.ZERO) == 0
+							|| imp.getValor().compareTo(BigDecimal.ZERO) == 0) {
+						continue;
+					}
+					// Etiqueta IVA X %:
+					contenido.beginText();
+					contenido.setFont(FONT_BOLD, FONT_SIZE_TITULO);
+					contenido.newLineAtOffset(labelX, yPos);
+					contenido.showText("IVA " + imp.getPorcentaje().setScale(2, RoundingMode.HALF_UP) + "%:");
+					contenido.endText();
+					// Valor
+					contenido.beginText();
+					contenido.setFont(FONT_REGULAR, FONT_SIZE_TITULO);
+					float valorWidth = FONT_REGULAR.getStringWidth(FormatoUtil.formatDecimal(imp.getValor())) / 1000
+							* FONT_SIZE_TITULO;
+					contenido.newLineAtOffset(valueX - valorWidth, yPos);
+					contenido.showText(FormatoUtil.formatDecimal(imp.getValor()));
+					contenido.endText();
+
+					yPos -= (FONT_SIZE_TITULO + 2);
+				}
+
+				// 2) Ahora actualiza tu 'y' para el resto de totales
+//				    Lo igualamos a yPos menos un pequeño padding
+				y = yPos - (FONT_SIZE_TITULO + 2);
+
+				// 3) Subtotal
 				contenido.beginText();
 				contenido.setFont(FONT_BOLD, FONT_SIZE_TITULO);
 				contenido.newLineAtOffset(labelX, y);
@@ -511,7 +617,8 @@ public class GeneradorFacturaController {
 				contenido.showText(FormatoUtil.formatDecimal(subTotal));
 				contenido.endText();
 				y -= (FONT_SIZE_TITULO + 2);
-				// IVA
+
+				// 4) IVA (global)
 				contenido.beginText();
 				contenido.setFont(FONT_BOLD, FONT_SIZE_TITULO);
 				contenido.newLineAtOffset(labelX, y);
@@ -524,7 +631,8 @@ public class GeneradorFacturaController {
 				contenido.showText(FormatoUtil.formatDecimal(totalIVA));
 				contenido.endText();
 				y -= (FONT_SIZE_TITULO + 2);
-				// Descuento
+
+				// 5) Descuento (si aplica)
 				if (totalDcto.compareTo(BigDecimal.ZERO) > 0) {
 					contenido.beginText();
 					contenido.setFont(FONT_BOLD, FONT_SIZE_TITULO);
@@ -540,7 +648,8 @@ public class GeneradorFacturaController {
 					contenido.endText();
 					y -= (FONT_SIZE_TITULO + 2);
 				}
-				// Total
+
+				// 6) Total final
 				contenido.beginText();
 				contenido.setFont(FONT_BOLD, FONT_SIZE_TITULO);
 				contenido.newLineAtOffset(labelX, y);
@@ -553,30 +662,7 @@ public class GeneradorFacturaController {
 				contenido.newLineAtOffset(valueX - textWidth, y);
 				contenido.showText(FormatoUtil.formatDecimal(totalVenta));
 				contenido.endText();
-				float yPos = y - (FONT_SIZE_TITULO + 2); // empieza un poco más abajo que el Total
-				for (FacturaImpuesto imp : impuestos) {
-					if (imp.getPorcentaje().compareTo(BigDecimal.ZERO) == 0
-							|| imp.getValor().compareTo(BigDecimal.ZERO) == 0) {
-						continue;
-					}
-					// Etiqueta IVA X %:
-					contenido.beginText();
-					contenido.setFont(FONT_BOLD, FONT_SIZE_TITULO);
-					contenido.newLineAtOffset(labelX, yPos);
-					contenido.showText("IVA " + imp.getPorcentaje().setScale(2, RoundingMode.HALF_UP) + "%:");
-					contenido.endText();
-					// Valor
-					contenido.beginText();
-					contenido.setFont(FONT_REGULAR, FONT_SIZE_TITULO);
-					contenido.newLineAtOffset(
-							valueX - (FONT_REGULAR.getStringWidth(FormatoUtil.formatDecimal(imp.getValor())) / 1000
-									* FONT_SIZE_TITULO),
-							yPos);
-					contenido.showText(FormatoUtil.formatDecimal(imp.getValor()));
-					contenido.endText();
 
-					yPos -= (FONT_SIZE_TITULO + 2);
-				}
 			}
 			documento.save(archivo);
 		}
