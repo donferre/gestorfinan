@@ -2,9 +2,11 @@ package com.italoweb.gestorfinan.navigation;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.italoweb.gestorfinan.model.Roles;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class MenuItem {
@@ -15,6 +17,7 @@ public class MenuItem {
     private List<MenuItem> subMenu;
     private int order;
     private EstadoMenu status;
+    private Set<Roles> roles;
 
     public MenuItem() {
     }
@@ -95,6 +98,14 @@ public class MenuItem {
 
 	public void setStatus(EstadoMenu status) {
 		this.status = status;
+	}
+
+	public Set<Roles> getRoles() {
+		return roles;
+	}
+
+	public void setRoles(Set<Roles> roles) {
+		this.roles = roles;
 	}
 }
 

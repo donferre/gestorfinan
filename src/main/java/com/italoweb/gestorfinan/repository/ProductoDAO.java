@@ -16,5 +16,5 @@ public class ProductoDAO extends GenericDAOImpl<Producto, Long> {
 			return session.createQuery(hql, Integer.class).setParameter("codigo", codigo).setMaxResults(1)
 					.uniqueResultOptional().isPresent();
 		}
-	}	
+	}
 }

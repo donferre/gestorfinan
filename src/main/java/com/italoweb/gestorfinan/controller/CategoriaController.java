@@ -101,7 +101,7 @@ public class CategoriaController extends Window implements AfterCompose {
 	public void cargarWinCategoriaForm(Categoria categoria) {
 		this.text_nombre.setValue("");
 		if (categoria != null) {
-			this.text_nombre.setValue(categoria.getNombre());
+			this.text_nombre.setValue(categoria.getNombre().toUpperCase());
 		}
 		this.win_categoria_form.setAttribute("categoria", categoria);
 		this.win_categoria_form.doModal();
@@ -116,10 +116,10 @@ public class CategoriaController extends Window implements AfterCompose {
 		String mensaje = "Categoria Guardada Exitosamente.";
 		if (categoria == null) {
 			categoria = new Categoria();
-			categoria.setNombre(nombre);
+			categoria.setNombre(nombre.toUpperCase());
 			this.categoriaDAO.save(categoria);
 		} else {
-			categoria.setNombre(nombre);
+			categoria.setNombre(nombre.toUpperCase());
 			this.categoriaDAO.update(categoria);
 			mensaje = "Categoria Editada Exitosamente";
 		}

@@ -61,6 +61,24 @@
                     <label class="color-label">Descripción: </label>
                     <textbox id="description" value="" width="100%"/>
                 </div>
+                 <separator sclass="mb-4"/>
+                <div sclass="col-md-6">
+                    <label class="color-label">NIT: </label>
+                    <textbox id="nit" value="" width="100%"/>
+                </div>
+                <div sclass="col-md-6">
+                    <label class="color-label">Telefono: </label>
+                    <textbox id="telefono" value="" width="100%"/>
+                </div>
+                 <separator sclass="mb-4"/>
+                <div sclass="col-md-6">
+                    <label class="color-label">Dirección: </label>
+                    <textbox id="direccion" value="" width="100%"/>
+                </div>
+                <div sclass="col-md-6">
+                    <label class="color-label">Email: </label>
+                    <textbox id="email" value="" width="100%"/>
+                </div>
             </div>
             <div sclass="row mb-4">
             	<div sclass="col-md-6">

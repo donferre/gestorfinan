@@ -1,6 +1,7 @@
 package com.italoweb.gestorfinan.util;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -10,12 +11,14 @@ import org.apache.commons.lang3.StringUtils;
 import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.Executions;
 import org.zkoss.zk.ui.IdSpace;
+import org.zkoss.zk.ui.WrongValueException;
 import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.event.Events;
 import org.zkoss.zk.ui.event.InputEvent;
 import org.zkoss.zk.ui.event.MouseEvent;
 import org.zkoss.zk.ui.event.SerializableEventListener;
+import org.zkoss.zk.ui.util.Clients;
 import org.zkoss.zk.ui.util.ConventionWires;
 import org.zkoss.zul.A;
 import org.zkoss.zul.Auxheader;
@@ -28,7 +31,9 @@ import org.zkoss.zul.Column;
 import org.zkoss.zul.Columns;
 import org.zkoss.zul.Combobox;
 import org.zkoss.zul.Comboitem;
+import org.zkoss.zul.Constraint;
 import org.zkoss.zul.Datebox;
+import org.zkoss.zul.Decimalbox;
 import org.zkoss.zul.Div;
 import org.zkoss.zul.Doublebox;
 import org.zkoss.zul.Doublespinner;
@@ -146,7 +151,7 @@ public class ComponentsUtil implements Serializable {
 
 	public static Longbox getLongbox(Long value, String placeholder, String format, int hflex) {
 		Longbox longbox = new Longbox();
-		if(value != null) {
+		if (value != null) {
 			longbox.setValue(value);
 		}
 		longbox.setClass("form-control");
@@ -156,8 +161,8 @@ public class ComponentsUtil implements Serializable {
 		if (StringUtils.isNotBlank(format)) {
 			longbox.setFormat(format);// PARA SOPORTAR EL 0 se debe poner este format "#,##0";
 		}
-		if(hflex > 0) {
-			longbox.setHflex(hflex+"");
+		if (hflex > 0) {
+			longbox.setHflex(hflex + "");
 		}
 		return longbox;
 	}
@@ -175,8 +180,8 @@ public class ComponentsUtil implements Serializable {
 		if (StringUtils.isNotBlank(format)) {
 			doublebox.setFormat(format);// Ejemplo 2 decimales este format ,###.##;
 		}
-		if(hflex > 0) {
-			doublebox.setHflex(hflex+"");
+		if (hflex > 0) {
+			doublebox.setHflex(hflex + "");
 		}
 		return doublebox;
 	}
@@ -215,7 +220,7 @@ public class ComponentsUtil implements Serializable {
 	public static Listbox getListbox(String emptyMessage, boolean withHead) {
 		Listbox listbox = new Listbox();
 		listbox.setWidth("100%");
-		if(withHead) {
+		if (withHead) {
 			Listhead listhead = new Listhead();
 			listbox.appendChild(listhead);
 		}
@@ -543,15 +548,18 @@ public class ComponentsUtil implements Serializable {
 		return getButton(label, sclass, iconSclass, tooltiptext, 0, null);
 	}
 
-	public static Button getButton(String label, String sclass, String iconSclass, EventListener<? extends Event> eventListener) {
+	public static Button getButton(String label, String sclass, String iconSclass,
+			EventListener<? extends Event> eventListener) {
 		return getButton(label, sclass, iconSclass, null, 0, eventListener);
 	}
 
-	public static Button getButton(String label, String sclass, String iconSclass, String tooltiptext, EventListener<? extends Event> eventListener) {
+	public static Button getButton(String label, String sclass, String iconSclass, String tooltiptext,
+			EventListener<? extends Event> eventListener) {
 		return getButton(label, sclass, iconSclass, tooltiptext, 0, eventListener);
 	}
 
-	public static Button getButton(String label, String sclass, String iconSclass, String tooltiptext, int hflex, EventListener<? extends Event> eventListener) {
+	public static Button getButton(String label, String sclass, String iconSclass, String tooltiptext, int hflex,
+			EventListener<? extends Event> eventListener) {
 		Button button = new Button();
 		button.setZclass("none");
 		button.setAutodisable("self");
@@ -567,8 +575,8 @@ public class ComponentsUtil implements Serializable {
 		if (StringUtils.isNotBlank(tooltiptext)) {
 			button.setTooltiptext(tooltiptext);
 		}
-		if(hflex > 0){
-			button.setHflex(hflex+"");
+		if (hflex > 0) {
+			button.setHflex(hflex + "");
 		}
 		if (eventListener != null) {
 			button.addEventListener(Events.ON_CLICK, eventListener);
@@ -640,7 +648,7 @@ public class ComponentsUtil implements Serializable {
 	}
 
 	public static Combobox getCombobox(String placeholder, boolean readonly, String width) {
-		/*Combobox combobox = new InfodiggCombobox();*/
+		/* Combobox combobox = new InfodiggCombobox(); */
 		Combobox combobox = new Combobox();
 		if (StringUtils.isNotBlank(placeholder)) {
 			combobox.setPlaceholder(placeholder);
@@ -664,7 +672,7 @@ public class ComponentsUtil implements Serializable {
 	}
 
 	public static Comboitem getComboitem(String label, String description, String tooltiptext, String imageSrc,
-										 org.zkoss.image.Image image, Object value) {
+			org.zkoss.image.Image image, Object value) {
 		Comboitem comboitem = getComboitem(label, description, value);
 		if (StringUtils.isNotBlank(tooltiptext)) {
 			comboitem.setTooltiptext(tooltiptext);
@@ -730,7 +738,8 @@ public class ComponentsUtil implements Serializable {
 		return getMenuitem(label, iconSclass, null);
 	}
 
-	public static Menuitem getMenuitem(String label, String iconSclass, EventListener<? extends Event> onClick, boolean visible) {
+	public static Menuitem getMenuitem(String label, String iconSclass, EventListener<? extends Event> onClick,
+			boolean visible) {
 		Menuitem menuItem = getMenuitem(label, iconSclass, onClick);
 		menuItem.setVisible(visible);
 		return menuItem;
@@ -893,15 +902,18 @@ public class ComponentsUtil implements Serializable {
 		return radio;
 	}
 
-	public static Datebox getDatebox(Date value, boolean readonly, String placeholder, String format, String constraint) {
+	public static Datebox getDatebox(Date value, boolean readonly, String placeholder, String format,
+			String constraint) {
 		return getDatebox(value, readonly, placeholder, format, constraint, null, 0);
 	}
 
-	public static Datebox getDatebox(Date value, boolean readonly, String placeholder, String format, String constraint, String selectLevel) {
+	public static Datebox getDatebox(Date value, boolean readonly, String placeholder, String format, String constraint,
+			String selectLevel) {
 		return getDatebox(value, readonly, placeholder, format, constraint, selectLevel, 0);
 	}
 
-	public static Datebox getDatebox(Date value, boolean readonly, String placeholder, String format, String constraint, String selectLevel, int hflex) {
+	public static Datebox getDatebox(Date value, boolean readonly, String placeholder, String format, String constraint,
+			String selectLevel, int hflex) {
 		Datebox datebox = new Datebox(value);
 		datebox.setReadonly(readonly);
 		if (StringUtils.isNotBlank(placeholder)) {
@@ -916,9 +928,9 @@ public class ComponentsUtil implements Serializable {
 		if (StringUtils.isNotBlank(selectLevel)) {
 			datebox.setSelectLevel(selectLevel);
 		}
-		if(hflex > 0) {
-			datebox.setHflex(hflex+"");
-		}else {
+		if (hflex > 0) {
+			datebox.setHflex(hflex + "");
+		} else {
 			datebox.setWidth("100%");
 		}
 		return datebox;
@@ -1044,7 +1056,7 @@ public class ComponentsUtil implements Serializable {
 	}
 
 	public static Toolbarbutton getToolBarButton(String label, String iconClass, String sClass,
-												 EventListener<MouseEvent> clickEvent) {
+			EventListener<MouseEvent> clickEvent) {
 		Toolbarbutton button = new Toolbarbutton();
 		if (!StringUtils.isBlank(label)) {
 			button.setLabel(label);
@@ -1089,8 +1101,8 @@ public class ComponentsUtil implements Serializable {
 	public static void fillComboboxWithStringList(Combobox combobox, List<String> list) {
 		combobox.getItems().clear();
 
-		if (list!=null) {
-			for(String elem : list) {
+		if (list != null) {
+			for (String elem : list) {
 				combobox.appendChild(getComboitem(elem, null, elem));
 			}
 		}
@@ -1102,9 +1114,10 @@ public class ComponentsUtil implements Serializable {
 		return result;
 	}
 
-	public static Window getWindow(String title, String border, boolean closable, String width, boolean visible, Component... components) {
+	public static Window getWindow(String title, String border, boolean closable, String width, boolean visible,
+			Component... components) {
 		Window window = new Window(title, border, closable);
-		if(StringUtils.isNotBlank(width)) {
+		if (StringUtils.isNotBlank(width)) {
 			window.setWidth(width);
 		}
 		window.setVisible(visible);
@@ -1127,7 +1140,7 @@ public class ComponentsUtil implements Serializable {
 	}
 
 	public static Component createComponents(String uri, Component parent, Map<?, ?> arg) {
-		//CommonsController.registerPageAccess(uri);
+		// CommonsController.registerPageAccess(uri);
 		if (arg == null) {
 			arg = new HashMap<>();
 		}
@@ -1135,17 +1148,41 @@ public class ComponentsUtil implements Serializable {
 		try {
 			result = Executions.createComponents(uri, parent, arg);
 		} catch (Throwable e) {
-			//IKernel.getBaseLogger().error("Error creating zul:" + uri,e);
+			// IKernel.getBaseLogger().error("Error creating zul:" + uri,e);
 			throw e;
 		}
 		return result;
 	}
-	
+
 	public static int safeParse(String val, int fallback) {
-	    try {
-	        return (val != null && val.matches("\\d+")) ? Integer.parseInt(val) : fallback;
-	    } catch (Exception e) {
-	        return fallback;
-	    }
+		try {
+			return (val != null && val.matches("\\d+")) ? Integer.parseInt(val) : fallback;
+		} catch (Exception e) {
+			return fallback;
+		}
 	}
+
+	public static Constraint porcentajeConstraint() {
+		return (comp, value) -> {
+			if (value == null) {
+				throw new WrongValueException(comp, "El descuento es obligatorio");
+			}
+			BigDecimal val = (BigDecimal) value;
+			if (val.compareTo(BigDecimal.ZERO) < 0 || val.compareTo(new BigDecimal("100")) > 0) {
+				throw new WrongValueException(comp, "El descuento debe estar entre 0 y 100");
+			}
+		};
+	}
+
+	public static void agregarValidadorPorcentajeEnVivo(Decimalbox decimalbox) {
+		decimalbox.addEventListener(Events.ON_CHANGE, e -> {
+			BigDecimal val = decimalbox.getValue();
+			if (val != null && (val.compareTo(BigDecimal.ZERO) < 0 || val.compareTo(new BigDecimal("100")) > 0)) {
+				Clients.showNotification("El descuento debe estar entre 0 y 100", "warning", decimalbox, "end_center",
+						3000);
+				decimalbox.setFocus(true);
+			}
+		});
+	}
+
 }

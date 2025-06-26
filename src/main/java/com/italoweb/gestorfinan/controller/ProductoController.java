@@ -31,6 +31,7 @@ import com.italoweb.gestorfinan.repository.ProductoDAO;
 import com.italoweb.gestorfinan.repository.UnidadCompraDAO;
 import com.italoweb.gestorfinan.util.ComponentsUtil;
 import com.italoweb.gestorfinan.util.DialogUtil;
+import com.italoweb.gestorfinan.util.FormatoUtil;
 
 public class ProductoController extends Window implements AfterCompose {
 	private static final long serialVersionUID = -6732848727890683953L;
@@ -141,6 +142,8 @@ public class ProductoController extends Window implements AfterCompose {
 		listitem.appendChild(new Listcell(producto.getImpuesto().getPorcentaje().toString()));
 		listitem.appendChild(new Listcell(producto.getCategoria().getNombre().toString()));
 		listitem.appendChild(new Listcell(producto.getStockMinimo().toString()));
+		listitem.appendChild(new Listcell(FormatoUtil.formatDecimal(producto.getPrecioCompra())));
+		listitem.appendChild(new Listcell(FormatoUtil.formatDecimal(producto.getPrecioVenta())));
 		listitem.appendChild(new Listcell(producto.getMarca()));
 
 		/* Acciones */

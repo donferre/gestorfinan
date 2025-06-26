@@ -1,14 +1,12 @@
 package com.italoweb.gestorfinan.controller;
 
 import java.math.BigDecimal;
-import java.text.NumberFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 import org.zkoss.zk.ui.Component;
@@ -41,6 +39,7 @@ import com.italoweb.gestorfinan.model.Proveedor;
 import com.italoweb.gestorfinan.model.Usuario;
 import com.italoweb.gestorfinan.model.compra.CompraDetalle;
 import com.italoweb.gestorfinan.model.compra.Compras;
+import com.italoweb.gestorfinan.model.venta.VentaDetalle;
 import com.italoweb.gestorfinan.repository.ComprasDAO;
 import com.italoweb.gestorfinan.repository.InventarioDAO;
 import com.italoweb.gestorfinan.repository.MedioPagoDAO;
@@ -64,6 +63,7 @@ public class ComprasController extends GenericForwardComposer<Component> {
 	private Combobox comb_medio_pago;
 	private Datebox date_fecha_ingreso;
 	private Datebox date_fecha_pago;
+	private List<CompraDetalle> listaDetalle = new ArrayList<>();
 	private Usuario usuarioSession = new Usuario();
 	private MedioPagoDAO medioPagoDAO = new MedioPagoDAO();
 	private ProveedorDAO proveedorDAO = new ProveedorDAO();
@@ -151,6 +151,14 @@ public class ComprasController extends GenericForwardComposer<Component> {
 	}
 
 	private void agregarProductoADetalle(Producto producto) {
+		// Verificar si el producto ya está en la lista
+		boolean productoYaExiste = listaDetalle.stream()
+				.anyMatch(detalle -> detalle.getProducto().getId().equals(producto.getId()));
+		if (productoYaExiste) {
+			Messagebox.show("El producto '" + producto.getNombre() + "' ya fue agregado.", "Producto duplicado",
+					Messagebox.OK, Messagebox.EXCLAMATION);
+			return;
+		}
 		CompraDetalle detalle = new CompraDetalle();
 		detalle.setProducto(producto);
 		detalle.setCantidadIngresar(1);
@@ -195,7 +203,7 @@ public class ComprasController extends GenericForwardComposer<Component> {
 		dtFechaVencimiento.setWidth("180px");
 		dtFechaVencimiento.setValue(FormatoUtil.convertirALocalDateDate(detalle.getFechaVencimiento())); // Puede ser
 		row.appendChild(dtFechaVencimiento);
-		
+
 		Label lblTotalFila = new Label("$ " + FormatoUtil.formatDecimal(detalle.getTotalCompra()));
 		row.appendChild(lblTotalFila);
 
@@ -302,7 +310,7 @@ public class ComprasController extends GenericForwardComposer<Component> {
 			DialogUtil.showError("Debe agregar al menos un producto a la compra.");
 			return;
 		}
-		
+
 		Compras.setNumeroFactura(txtNumeroFactura.getValue());
 		Compras.setFechaIngreso(FormatoUtil.convertirADateLocal(date_fecha_ingreso.getValue()));
 		Compras.setFechaPago(FormatoUtil.convertirADateLocal(date_fecha_pago.getValue()));

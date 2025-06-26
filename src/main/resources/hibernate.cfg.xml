@@ -22,7 +22,6 @@
 		<mapping class="com.italoweb.gestorfinan.model.compra.Compras" />
 		<mapping class="com.italoweb.gestorfinan.model.compra.CompraDetalle" />
 		<mapping class="com.italoweb.gestorfinan.model.Proveedor" />
-		<mapping class="com.italoweb.gestorfinan.model.TipoProveedor" />
 		<mapping class="com.italoweb.gestorfinan.model.Empleado" />
 		<mapping class="com.italoweb.gestorfinan.model.Inventario" />
 		<mapping class="com.italoweb.gestorfinan.model.Impuesto" />
@@ -32,5 +31,10 @@
 		<mapping class="com.italoweb.gestorfinan.model.poblacion.Pais" />
 		<mapping class="com.italoweb.gestorfinan.model.SesionUsuario" />
 		<mapping class="com.italoweb.gestorfinan.model.ParametrosGenerales" />
+		<mapping class="com.italoweb.gestorfinan.model.ProductoDescuento" />
+		<mapping class="com.italoweb.gestorfinan.model.Roles" />
+		<mapping class="com.italoweb.gestorfinan.model.factura.Factura" />
+		<mapping class="com.italoweb.gestorfinan.model.factura.FacturaDetalle" />
+		<mapping class="com.italoweb.gestorfinan.model.factura.FacturaImpuesto" />
 	</session-factory>
 </hibernate-configuration>

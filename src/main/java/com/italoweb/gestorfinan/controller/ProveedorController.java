@@ -54,8 +54,7 @@ public class ProveedorController extends Window implements AfterCompose {
 	private Combobox comb_pais;
 
 	private ProveedorDAO proveedorDAO = new ProveedorDAO();
-	private TipoProveedorDAO tipoProveedorDAO = new TipoProveedorDAO();
-	private PoblacionDAO poblacionDAO =  new PoblacionDAO();
+	private PoblacionDAO poblacionDAO = new PoblacionDAO();
 
 	@Override
 	public void afterCompose() {
@@ -73,7 +72,7 @@ public class ProveedorController extends Window implements AfterCompose {
 		this.text_telefono.setZclass("none");
 		this.text_telefono.setWidgetListener("onBind", "jq(this.getInputNode()).mask('(999) 999-9999');");
 		cargarComboboxPais();
-		cargarTipoProveedor();
+		inicializarComboboxTipoProveedor();
 	}
 
 	public void cargarListaProveedor() {
@@ -82,12 +81,13 @@ public class ProveedorController extends Window implements AfterCompose {
 		proveedorDAO.findAll().forEach(this::createListitem);
 	}
 
-	public void cargarTipoProveedor() {
-		this.comb_tipo_proveedor.setAutocomplete(false);
-		List<TipoProveedor> listaTipoProveedor = this.tipoProveedorDAO.findAll();
-		for (TipoProveedor tipoProveedor : listaTipoProveedor) {
-			this.comb_tipo_proveedor
-					.appendChild(ComponentsUtil.getComboitem(tipoProveedor.getDescripcion(), null, tipoProveedor));
+	private void inicializarComboboxTipoProveedor() {
+		comb_tipo_proveedor.getItems().clear();
+		comb_tipo_proveedor.setReadonly(true);
+		for (TipoProveedor tp : TipoProveedor.values()) {
+			Comboitem item = new Comboitem(tp.getLabel());
+			item.setValue(tp);
+			comb_tipo_proveedor.appendChild(item);
 		}
 	}
 
@@ -197,6 +197,10 @@ public class ProveedorController extends Window implements AfterCompose {
 		listitem.appendChild(new Listcell(proveedor.getCiudad().getNombre()));
 		listitem.appendChild(new Listcell(proveedor.getPersonaContacto()));
 		listitem.appendChild(new Listcell(proveedor.getDireccion()));
+		listitem.appendChild(new Listcell(
+				proveedor.getTipo() != null && proveedor.getTipo().equals(TipoProveedor.NATURAL) ? "Natural"
+						: "Juridico"));
+
 		/* Estado */
 		Switch checkActive = ComponentsUtil.getSwitch(proveedor.getEstado().equals(Estado.ACTIVO));
 		checkActive.addEventListener(Switch.ON_TOGGLE, new SerializableEventListener<Event>() {
@@ -263,7 +267,7 @@ public class ProveedorController extends Window implements AfterCompose {
 	public void filtrarComboDepartamento(String filter) {
 		filtrarCombo(this.comb_departamento, filter);
 	}
-	
+
 	public void filtrarComboTipo(String filter) {
 		filtrarCombo(this.comb_tipo_proveedor, filter);
 	}
@@ -288,7 +292,7 @@ public class ProveedorController extends Window implements AfterCompose {
 		comb_ciudad.getItems().clear();
 		comb_departamento.setDisabled(true);
 		comb_ciudad.setDisabled(true);
-
+		this.comb_tipo_proveedor.setSelectedItem(null);
 		if (proveedor != null) {
 			text_nit.setValue(proveedor.getNit());
 			text_nombre.setValue(proveedor.getNombre());
@@ -296,7 +300,12 @@ public class ProveedorController extends Window implements AfterCompose {
 			text_email.setValue(proveedor.getEmail());
 			text_telefono.setValue(proveedor.getTelefono());
 			text_direccion.setValue(proveedor.getDireccion());
-			ComponentsUtil.setComboboxValue(this.comb_tipo_proveedor, proveedor.getTipoProveedor());
+			for (Comboitem item : comb_tipo_proveedor.getItems()) {
+				if (item.getValue() == proveedor.getTipo()) {
+					comb_tipo_proveedor.setSelectedItem(item);
+					break;
+				}
+			}
 			Ciudad ciudad = proveedor.getCiudad();
 			Departamento departamento = ciudad.getDepartamento();
 			Pais pais = departamento.getPais();
@@ -333,6 +342,7 @@ public class ProveedorController extends Window implements AfterCompose {
 		this.win_proveedor_form.doModal();
 	}
 
+	@SuppressWarnings("unused")
 	public void guardarWinProveedorForm() {
 
 		String nit = this.text_nit.getValue().trim();
@@ -343,11 +353,14 @@ public class ProveedorController extends Window implements AfterCompose {
 		Ciudad ciudad = comb_ciudad.getSelectedItem() != null ? (Ciudad) comb_ciudad.getSelectedItem().getValue()
 				: null;
 		String direccion = this.text_direccion.getValue();
-		TipoProveedor tipoProveedor =this.comb_tipo_proveedor.getSelectedItem() != null
-				? this.comb_tipo_proveedor.getSelectedItem().getValue()
-				: null;
+		Comboitem sel = comb_tipo_proveedor.getSelectedItem();
+		TipoProveedor tipo = (TipoProveedor) sel.getValue();
 		String mensaje = "Proveedor Guardado Exitosamente";
 		// Validaciones
+		if (sel == null) {
+			DialogUtil.showError("Debe ingresar el tipo.");
+			return;
+		}
 		if (StringUtils.isBlank(nit)) {
 			DialogUtil.showError("El NIT es Obligatorio.");
 			return;
@@ -376,11 +389,6 @@ public class ProveedorController extends Window implements AfterCompose {
 			DialogUtil.showError("La dirección es Obligatoria.");
 			return;
 		}
-		
-		if (tipoProveedor == null) {
-			DialogUtil.showError("El tipo es obligatorio.");
-			return;
-		}
 
 		Proveedor proveedor = (Proveedor) this.win_proveedor_form.getAttribute("CLIENTE");
 
@@ -391,7 +399,7 @@ public class ProveedorController extends Window implements AfterCompose {
 			proveedor.setEmail(email);
 			proveedor.setTelefono(telefono);
 			proveedor.setCiudad(ciudad);
-			proveedor.setTipoProveedor(tipoProveedor);
+			proveedor.setTipo(tipo);
 			proveedor.setDireccion(direccion);
 			proveedor.setPersonaContacto(personaContacto);
 			proveedor.setEstado(Estado.ACTIVO);
@@ -402,10 +410,9 @@ public class ProveedorController extends Window implements AfterCompose {
 			proveedor.setEmail(email);
 			proveedor.setTelefono(telefono);
 			proveedor.setCiudad(ciudad);
-			proveedor.setTipoProveedor(tipoProveedor);
+			proveedor.setTipo(tipo);
 			proveedor.setDireccion(direccion);
 			proveedor.setPersonaContacto(personaContacto);
-			proveedor.setTipoProveedor(tipoProveedor);
 			this.proveedorDAO.update(proveedor);
 			mensaje = "Proveedor Editado Exitosamente";
 		}

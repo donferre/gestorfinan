@@ -1,0 +1,88 @@
+<zk>
+	<window border="none" width="100%" height="100%"
+		style="background: #11101d !important;"
+		apply="org.zkoss.bind.BindComposer"
+		viewModel="@id('vm') @init('com.italoweb.gestorfinan.controller.DashboardController')">
+
+		<vlayout spacing="20px" style="padding: 20px">
+			<label value="📊 Inicio"
+				style="font-weight: bold; font-size: 20px" />
+			<!-- Grids Detalle de Totales -->
+			<hlayout spacing="20px" style="margin-top: 20px">
+
+				<vlayout>
+					<label value="🧾 Detalle Total Ventas por Mes"
+						style="color: black; font-weight: bold" />
+					<grid model="@load(vm.totalVentasDTO)"
+						width="400px">
+						<columns>
+							<column label="Mes" width="150px" />
+							<column label="Total Ventas" />
+						</columns>
+						<template name="model" var="item">
+							<row>
+								<label value="@load(item.periodo)" />
+								<label
+									value="@load(item.cantidadFormateada)" />
+							</row>
+						</template>
+					</grid>
+				</vlayout>
+
+				<vlayout>
+					<label value="🧾 Detalle Total Compras por Mes"
+						style="color: black; font-weight: bold" />
+					<grid model="@load(vm.totalComprasDTO)"
+						width="400px">
+						<columns>
+							<column label="Mes" width="150px" />
+							<column label="Total Compras" />
+						</columns>
+						<template name="model" var="item">
+							<row>
+								<label value="@load(item.periodo)" />
+								<label
+									value="@load(item.cantidadFormateada)" />
+							</row>
+						</template>
+					</grid>
+				</vlayout>
+
+			</hlayout>
+			<grid hflex="1">
+				<rows>
+					<row>
+						<chartjs type="bar"
+							title="🛒 Producto Más Vendido"
+							data="@load(vm.productoMasVendidoModel)" width="100%"
+							height="300px" />
+
+						<chartjs type="pie" title="🏷️ Top 5 Categorías"
+							data="@load(vm.topCategoriasModel)" width="100%" height="300px" />
+
+						<chartjs type="bar"
+							title="📈 Cantidad de Ventas por Mes"
+							data="@load(vm.ventasPorMesModel)" width="100%" height="300px" />
+					</row>
+					<row>
+						<chartjs type="bar"
+							title="📉 Cantidad de Compras por Mes"
+							data="@load(vm.comprasPorMesModel)" width="100%" height="300px" />
+
+						<chartjs type="bar"
+							title="💰 Total Ventas por Mes (en $)"
+							data="@load(vm.totalVentasPorMesModel)" width="100%"
+							height="300px" />
+
+						<chartjs type="bar"
+							title="💸 Total Compras por Mes (en $)"
+							data="@load(vm.totalComprasPorMesModel)" width="100%"
+							height="300px" />
+					</row>
+				</rows>
+			</grid>
+
+
+		</vlayout>
+	</window>
+</zk>

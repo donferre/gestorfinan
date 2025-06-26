@@ -1,0 +1,56 @@
+<?taglib uri="http://www.zkoss.org/dsp/web/core" prefix="c"?>
+<zk xmlns:h="http://www.zkoss.org/2005/zk/native"
+    xmlns:w="http://www.zkoss.org/2005/zk/client">
+<div id="win_rol" sclass="container-fluid" use="com.italoweb.gestorfinan.controller.RolesController">
+    <style>
+        .div_list_rol{
+            height: calc(100vh - 260px);
+        }
+        @media (max-width: 768px) {
+            .z-window {
+                width: 100% !important;
+                left: 0 !important;
+                top: 50px !important; 
+            }
+        }
+    </style>
+    <div class="mb-3">
+        <div sclass="mb-1">
+            <label sclass="h5" value="Unidades de Compra"></label>
+        </div>
+        <vlayout>
+            <div class="input-group">
+                <textbox id="text_filtrar_rol" class="form-control" placeholder="Buscar" onChanging="win_rol.filtrarListRoles(event.value)"/>
+                <span class="input-group-btn">
+                    <button iconSclass="z-icon-plus-circle" class="btn btn-success" label="Crear"
+                            onClick="win_rol.cargarWinRolesForm(null)"/>
+                </span>
+            </div>
+            <div class="div_list_rol">
+                <listbox id="listbox_rol" nonselectableTags="*" emptyMessage="No hay Registros" vflex="1">
+                    <listhead>
+                        <listheader label="Id" sort="auto"/>
+                        <listheader label="Nombre" sort="auto"/>
+                        <listheader />
+                    </listhead>
+                </listbox>
+            </div>
+        </vlayout>
+    </div>
+    <window id="win_rol_form" title="Roles" closable="true" width="30%" visible="false"
+            onClose="win_rol_form.setVisible(false); event.stopPropagation();">
+        <div class="row justify-content-center">
+            <div class="z-grid-border-less">
+                <div class="mb-3">
+                    <label value="Nombre:" class="infodigg-grid-title"/>
+                    <textbox id="text_nombre" class="form-control"  style="text-transform: uppercase;"/>
+                </div>
+                <div sclass="text-end">
+                    <button class="btn btn-primary" iconSclass="fa fa-floppy-o" label="Guardar"
+                            onClick="win_rol.guardarWinRolesForm();"/>
+                </div>
+            </div>
+        </div>
+    </window>
+</div>
+</zk>

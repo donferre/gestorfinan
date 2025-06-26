@@ -31,8 +31,10 @@ public class ParametrosGeneralesController extends Window implements AfterCompos
 	private Textbox text_filtrar_parametros_generales;
 	private Listbox listbox_parametros_generales;
 	private Window win_parametros_generales_form;
+	private Combobox comb_tipo_factura;
 	private Combobox comb_responsable_iva;
 	private Combobox comb_habilita_precio_venta;
+	private Combobox comb_habilita_descuento_total;
 	private Textbox text_prefijo_dian;
 	private Textbox text_prefijo;
 	private Longbox long_consecutivo_dian;
@@ -54,6 +56,9 @@ public class ParametrosGeneralesController extends Window implements AfterCompos
 		this.isMobile();
 		this.inicializarComboboxResponsableIVA();
 		inicializarComboboxHabPrecioVenta();
+		inicializarComboboxHabDescuentoTotal();
+		inicializarComboboxTipoFactura();
+		
 	}
 
 	public boolean permisoCrear() {
@@ -67,12 +72,25 @@ public class ParametrosGeneralesController extends Window implements AfterCompos
 		agregarItemCombo(comb_responsable_iva, "Sí", "S");
 		agregarItemCombo(comb_responsable_iva, "No", "N");
 	}
+	private void inicializarComboboxTipoFactura() {
+		comb_tipo_factura.getItems().clear();
+		comb_tipo_factura.setReadonly(true);
+		agregarItemCombo(comb_tipo_factura, "80mm", "mm");
+		agregarItemCombo(comb_tipo_factura, "Media carta", "mc");
+	}
 
 	private void inicializarComboboxHabPrecioVenta() {
 		comb_habilita_precio_venta.getItems().clear();
 		comb_habilita_precio_venta.setReadonly(true);
 		agregarItemCombo(comb_habilita_precio_venta, "Sí", "S");
 		agregarItemCombo(comb_habilita_precio_venta, "No", "N");
+	}
+	
+	private void inicializarComboboxHabDescuentoTotal() {
+		comb_habilita_descuento_total.getItems().clear();
+		comb_habilita_descuento_total.setReadonly(true);
+		agregarItemCombo(comb_habilita_descuento_total, "Sí", "S");
+		agregarItemCombo(comb_habilita_descuento_total, "No", "N");
 	}
 
 	private void agregarItemCombo(Combobox combo, String label, String value) {
@@ -184,12 +202,16 @@ public class ParametrosGeneralesController extends Window implements AfterCompos
 		listitem.getChildren().clear();
 		listitem.appendChild(new Listcell(parametrosGenerales.getResponsableIVA() != null
 				&& parametrosGenerales.getResponsableIVA().equalsIgnoreCase("S") ? "Si" : "No"));
-		listitem.appendChild(new Listcell(parametrosGenerales.getPrefijoDian()));
-		listitem.appendChild(new Listcell(parametrosGenerales.getPrefijo()));
+		listitem.appendChild(new Listcell(parametrosGenerales.getPrefijoDian().toUpperCase()));
+		listitem.appendChild(new Listcell(parametrosGenerales.getPrefijo().toUpperCase()));
 		listitem.appendChild(new Listcell(parametrosGenerales.getConsecutivoDian().toString()));
 		listitem.appendChild(new Listcell(parametrosGenerales.getConsecutivo().toString()));
 		listitem.appendChild(new Listcell(parametrosGenerales.getHabilitaPrecioVenta() != null
 				&& parametrosGenerales.getHabilitaPrecioVenta().equalsIgnoreCase("S") ? "Si" : "No"));
+		listitem.appendChild(new Listcell(parametrosGenerales.getHabilitaDescuentoTotal() != null
+				&& parametrosGenerales.getHabilitaDescuentoTotal().equalsIgnoreCase("S") ? "Si" : "No"));
+		listitem.appendChild(new Listcell(parametrosGenerales.getTipoFactura() != null
+				&& parametrosGenerales.getTipoFactura().equalsIgnoreCase("mm") ? "80mm" :  parametrosGenerales.getTipoFactura().equalsIgnoreCase("mc") ? "Media carta":"No"));
 
 		/* Acciones */
 		Button btnEdit = ComponentsUtil.getButton("", "btn btn-primary", "z-icon-pencil");
@@ -224,6 +246,8 @@ public class ParametrosGeneralesController extends Window implements AfterCompos
 		validaResponsableIVAModal();
 		this.comb_responsable_iva.setSelectedItem(null);
 		this.comb_habilita_precio_venta.setSelectedItem(null);
+		this.comb_habilita_descuento_total.setSelectedItem(null);
+		this.comb_tipo_factura.setSelectedItem(null);
 		this.text_prefijo_dian.setValue("");
 		this.text_prefijo.setValue("");
 		this.long_consecutivo_dian.setValue(0L);
@@ -241,6 +265,18 @@ public class ParametrosGeneralesController extends Window implements AfterCompos
 					break;
 				}
 			}
+			for (Comboitem item : comb_habilita_descuento_total.getItems()) {
+				if (item.getValue().equals(parametrosGenerales.getHabilitaDescuentoTotal())) {
+					comb_habilita_descuento_total.setSelectedItem(item);
+					break;
+				}
+			}
+			for (Comboitem item : comb_tipo_factura.getItems()) {
+				if (item.getValue().equals(parametrosGenerales.getTipoFactura())) {
+					comb_tipo_factura.setSelectedItem(item);
+					break;
+				}
+			}
 			this.text_prefijo_dian.setValue(parametrosGenerales.getPrefijoDian());
 			this.text_prefijo.setValue(parametrosGenerales.getPrefijo());
 			this.long_consecutivo_dian.setValue(parametrosGenerales.getConsecutivoDian());
@@ -255,8 +291,10 @@ public class ParametrosGeneralesController extends Window implements AfterCompos
 		if (!validarDatos()) {
 			return;
 		}
+		String tipoFactura = this.comb_tipo_factura.getSelectedItem().getValue();
 		String responsableIVA = this.comb_responsable_iva.getSelectedItem().getValue();
 		String habilitaPrecioVenta = this.comb_habilita_precio_venta.getSelectedItem().getValue();
+		String habilitaDescuentoTotal = this.comb_habilita_descuento_total.getSelectedItem().getValue();
 		String prefijoDian = this.text_prefijo_dian.getValue();
 		String prefijo = this.text_prefijo.getValue();
 		Long consecutivoDian = this.long_consecutivo_dian.getValue();
@@ -267,20 +305,24 @@ public class ParametrosGeneralesController extends Window implements AfterCompos
 		String mensaje = "Parametro General Guardado Exitosamente.";
 		if (parametrosGenerales == null) {
 			parametrosGenerales = new ParametrosGenerales();
+			parametrosGenerales.setTipoFactura(tipoFactura);
 			parametrosGenerales.setResponsableIVA(responsableIVA);
-			parametrosGenerales.setPrefijoDian(prefijoDian);
-			parametrosGenerales.setPrefijo(prefijo);
+			parametrosGenerales.setPrefijoDian(prefijoDian.toUpperCase());
+			parametrosGenerales.setPrefijo(prefijo.toUpperCase());
 			parametrosGenerales.setConsecutivoDian(consecutivoDian);
 			parametrosGenerales.setConsecutivo(consecutivo);
 			parametrosGenerales.setHabilitaPrecioVenta(habilitaPrecioVenta);
+			parametrosGenerales.setHabilitaDescuentoTotal(habilitaDescuentoTotal);
 			this.parametrosGeneralesDAO.save(parametrosGenerales);
 		} else {
+			parametrosGenerales.setTipoFactura(tipoFactura);
 			parametrosGenerales.setResponsableIVA(responsableIVA);
-			parametrosGenerales.setPrefijoDian(prefijoDian);
-			parametrosGenerales.setPrefijo(prefijo);
+			parametrosGenerales.setPrefijoDian(prefijoDian.toUpperCase());
+			parametrosGenerales.setPrefijo(prefijo.toUpperCase());
 			parametrosGenerales.setConsecutivoDian(consecutivoDian);
 			parametrosGenerales.setConsecutivo(consecutivo);
 			parametrosGenerales.setHabilitaPrecioVenta(habilitaPrecioVenta);
+			parametrosGenerales.setHabilitaDescuentoTotal(habilitaDescuentoTotal);
 			this.parametrosGeneralesDAO.update(parametrosGenerales);
 			mensaje = "Parametro General Editada Exitosamente";
 		}

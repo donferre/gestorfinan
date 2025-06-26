@@ -26,10 +26,10 @@ public class Producto {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@Column(name = "codigo", nullable = false, length = 50)
+	@Column(name = "codigo", nullable = false, length = 20)
 	private String codigo;
 
-	@Column(name = "nombre", nullable = false, length = 255)
+	@Column(name = "nombre", nullable = false, length = 20)
 	private String nombre;
 
 	@Column(name = "descripcion", length = 255)
@@ -59,8 +59,8 @@ public class Producto {
 	@Column(name = "fecha_final_desc")
 	private LocalDateTime  fechaFinalDescuento;
 	
-//	@Column(name = "fecha_vencimiento")
-//	private LocalDateTime  fechaVencimiento;
+	@Column(name = "fecha_vencimiento")
+	private LocalDateTime  fechaVencimiento;
 	
 	@Column(name = "decuento")
 	private BigDecimal descuento;

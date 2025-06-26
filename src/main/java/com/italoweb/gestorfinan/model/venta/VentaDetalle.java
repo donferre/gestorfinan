@@ -46,5 +46,10 @@ public class VentaDetalle {
 
 	@Column(name = "ivaVenta")
 	private BigDecimal ivaVenta;
+	
+	@Column(name = "precio_venta_final")
+	private BigDecimal PrecioVentaFinal;
 
+	@Column(name = "descuento_producto", precision = 5, scale = 2)
+	private BigDecimal descuentoProducto;
 }

@@ -5,26 +5,27 @@ import jakarta.persistence.*;
 @Entity
 @Table(name = "usuarios")
 public class Usuario {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id_usuario;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id_usuario;
 
-    @Column(unique = true, nullable = false)
-    private String username;
+	@Column(unique = true, nullable = false)
+	private String username;
 
-    @Column(nullable = false)
-    private String password;
+	@Column(nullable = false)
+	private String password;
 
-    @Column(nullable = false, name = "perfil_usuario")
-    private PerfilUsuario perfilUsuario;
-    
-    @Column(nullable = false)
-    private Estado estado;
-    
-    @Column(nullable = false)
-    private String descripcion;
-    
- // Getters y Setters
+	@Column(nullable = false)
+	private Estado estado;
+
+	@Column(nullable = false)
+	private String descripcion;
+
+	@ManyToOne
+	@JoinColumn(name = "id_role", nullable = false)
+	private Roles roles;
+
+	// Getters y Setters
 
 	public String getUsername() {
 		return username;
@@ -50,14 +51,6 @@ public class Usuario {
 		this.password = password;
 	}
 
-	public PerfilUsuario getPerfilUsuario() {
-		return perfilUsuario;
-	}
-
-	public void setPerfilUsuario(PerfilUsuario perfilUsuario) {
-		this.perfilUsuario = perfilUsuario;
-	}
-
 	public Estado getEstado() {
 		return estado;
 	}
@@ -74,6 +67,12 @@ public class Usuario {
 		this.descripcion = descripcion;
 	}
 
-    
-    
+	public Roles getRoles() {
+		return roles;
+	}
+
+	public void setRoles(Roles roles) {
+		this.roles = roles;
+	}
+
 }

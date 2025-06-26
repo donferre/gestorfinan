@@ -110,7 +110,7 @@ public class ImpuestoController  extends Window implements AfterCompose {
 		this.debx_porcentaje.setValue(new BigDecimal(0));
 		if (impuesto != null) {
 			this.text_codigo.setValue(impuesto.getCodigo());
-			this.text_nombre.setValue(impuesto.getNombre());
+			this.text_nombre.setValue(impuesto.getNombre().toUpperCase());
 			this.debx_porcentaje.setValue(impuesto.getPorcentaje());
 		}
 		this.win_impuesto_form.setAttribute("IMPUESTO", impuesto);
@@ -129,12 +129,12 @@ public class ImpuestoController  extends Window implements AfterCompose {
 		if (impuesto == null) {
 			impuesto = new Impuesto();
 			impuesto.setCodigo(codigo);
-			impuesto.setNombre(nombre);
+			impuesto.setNombre(nombre.toUpperCase());
 			impuesto.setPorcentaje(porcentaje);
 			this.impuestoDAO.save(impuesto);
 		} else {
 			impuesto.setCodigo(codigo);
-			impuesto.setNombre(nombre);
+			impuesto.setNombre(nombre.toUpperCase());
 			impuesto.setPorcentaje(porcentaje);
 			this.impuestoDAO.update(impuesto);
 			mensaje = "Impuesto Editada Exitosamente";

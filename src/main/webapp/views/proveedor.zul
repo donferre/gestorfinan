@@ -59,15 +59,18 @@
 				</div>
 				<div class="div_list_proveedor">
 					<listbox id="listbox_proveedor" span="true"
-						nonselectableTags="*" emptyMessage="No hay Registros">
+						mold="paging" pageSize="10" nonselectableTags="*"
+						emptyMessage="No hay Registros">
 						<listhead>
 							<listheader label="NIT" sort="auto" />
 							<listheader label="Nombre" sort="auto" />
 							<listheader label="Email" sort="auto" />
 							<listheader label="Telefono" sort="auto" />
 							<listheader label="Ciudad" sort="auto" />
-							<listheader label="Persona de contacto" sort="auto" />
+							<listheader label="Persona de contacto"
+								sort="auto" />
 							<listheader label="Direccion" sort="auto" />
+							<listheader label="Tipo" sort="auto" />
 							<listheader label="Estado" sort="auto" />
 							<listheader label="Acciones" hflex="min" />
 						</listhead>
@@ -122,10 +125,17 @@
 							onChanging="win_proveedor.filtrarComboCiudad(event.value)" />
 					</div>
 					<div class="mb-3">
-						<label value="Tipo:"
-							class="infodigg-grid-title" />
-						<combobox id="comb_tipo_proveedor" width="100%"
-							onChanging="win_proveedor.filtrarComboTipo(event.value)" />
+						<label value="tipo:"
+							class="infodigg-grid-title me-2" />
+						<combobox id="comb_tipo_proveedor"
+							onChanging="win_proveedor.filtrarComboTipo(event.value)">
+							<comboitem
+								label="${TipoProveedor.NATURAL.label}"
+								value="${TipoProveedor.NATURAL}" />
+							<comboitem
+								label="${TipoProveedor.JURIDICO.label}"
+								value="${TipoProveedor.JURIDICO}" />
+						</combobox>
 					</div>
 					<div class="mb-3">
 						<label value="Persona de contacto:"

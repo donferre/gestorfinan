@@ -21,10 +21,13 @@ import org.zkoss.zul.Span;
 import org.zkoss.zul.Textbox;
 import org.zkoss.zul.Window;
 
+import com.italoweb.gestorfinan.components.Chosenbox;
 import com.italoweb.gestorfinan.components.Switch;
 import com.italoweb.gestorfinan.config.MenuManager;
+import com.italoweb.gestorfinan.model.Roles;
 import com.italoweb.gestorfinan.navigation.EstadoMenu;
 import com.italoweb.gestorfinan.navigation.MenuItem;
+import com.italoweb.gestorfinan.repository.RolesDAO;
 import com.italoweb.gestorfinan.util.ComponentsUtil;
 import com.italoweb.gestorfinan.util.DialogUtil;
 import com.italoweb.gestorfinan.util.HEXUtil;
@@ -43,8 +46,11 @@ public class MenuController extends Window implements AfterCompose {
     private Textbox text_nombre_win, text_url_win, text_icono_win;
     private Div div_estado;
     private Switch switch_estado;
+    private Div div_roles;
+    private Chosenbox<Roles> chosen_roles;
 
     private MenuManager manager;
+    private RolesDAO rolesDAO;
 
     @Override
     public void afterCompose() {
@@ -67,6 +73,7 @@ public class MenuController extends Window implements AfterCompose {
                     item.setHref(bookmarkUrl(text_url.getValue()));
                     item.setIconClass(text_icono.getValue());
                     item.setOrder(text_orden.getValue());
+                    item.setRoles(chosen_roles.getSelectedItems());
                     MenuManager menu = new MenuManager();
                     menu.updateById(id, item);
                     Executions.sendRedirect(null);
@@ -94,6 +101,14 @@ public class MenuController extends Window implements AfterCompose {
             }
         });
         this.div_estado.appendChild(this.switch_estado);
+        this.rolesDAO = new RolesDAO();
+        
+        List<Roles> roles = this.rolesDAO.findAll();
+        this.chosen_roles = new Chosenbox<Roles>();
+        this.chosen_roles.setModel(roles, Roles::getNombre);
+        this.chosen_roles.setMultiple(true);
+        this.chosen_roles.setWrapMode("scroll");
+        this.div_roles.appendChild(this.chosen_roles);
     }
 
     // Inicializa los elementos del menú
@@ -148,6 +163,11 @@ public class MenuController extends Window implements AfterCompose {
             btn_guardar.setAttribute("MENU_ITEM", item);
             btn_guardar.setDisabled(false);
             switch_estado.setChecked(item.getStatus() == EstadoMenu.ACTIVO ? true : false);
+            chosen_roles.clearSelection();
+            if (item.getRoles() != null) {
+                List<Roles> getRoles = new ArrayList<>(item.getRoles());
+                chosen_roles.setSelectedItems(getRoles);
+			}
         });
 
         // Crear menú contextual
@@ -242,6 +262,11 @@ public class MenuController extends Window implements AfterCompose {
             btn_guardar.setAttribute("MENU_ITEM", item);
             btn_guardar.setDisabled(false);
             switch_estado.setChecked(item.getStatus() == EstadoMenu.ACTIVO ? true : false);
+            chosen_roles.clearSelection();
+            if (item.getRoles() != null) {
+                List<Roles> getRoles = new ArrayList<>(item.getRoles());
+                chosen_roles.setSelectedItems(getRoles);
+			}
         });
 
         // Crear menú contextual

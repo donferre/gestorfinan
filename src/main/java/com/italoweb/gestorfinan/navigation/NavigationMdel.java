@@ -1,7 +1,7 @@
 package com.italoweb.gestorfinan.navigation;
 
 public class NavigationMdel {
-    public static final String INDEX_PAGE = "/views/inicio.zul";
+    public static final String INDEX_PAGE = "/views/dashboard.zul";
     public static final String BLANK_ZUL = "/blank.zul";
     public static final String LOGIN_ZUL = "/login.zul";
 

@@ -70,7 +70,7 @@
 							</div>
 						</div>
 						<div class="div_list_productos">
-							<listbox id="listbox_productos" mold="paging" pageSize="5"
+							<listbox id="listbox_productos" mold="paging" pageSize="10"
 								nonselectableTags="*" emptyMessage="No hay Registros">
 
 								<listhead>
@@ -89,6 +89,10 @@
 									<listheader label="Categoría"
 										sort="auto" />
 									<listheader label="Stock Mínimo"
+										sort="auto" />
+									<listheader label="Precio Compra"
+										sort="auto" />
+									<listheader label="Precio Venta"
 										sort="auto" />
 									<listheader label="Marca"
 										sort="auto" />

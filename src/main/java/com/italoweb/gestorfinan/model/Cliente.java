@@ -4,6 +4,8 @@ import java.util.Date;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -39,9 +41,8 @@ public class Cliente {
 	@Column(nullable = false)
 	private Estado estado;
 
-	@ManyToOne(optional = false)
-	@JoinColumn(name = "tipo_proveedor_id", nullable = false)
-	private TipoProveedor tipoProveedor;
+	@Column(name = "tipo", nullable = false)
+	private TipoProveedor tipo;
 
 	@Column(nullable = true)
 	private Date fechaCreacion;

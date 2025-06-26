@@ -26,13 +26,14 @@
 				</div>
 				<div class="div_list_clientes">
 					<listbox id="listbox_clientes" nonselectableTags="*"
-						emptyMessage="No hay Registros" vflex="1">
+						emptyMessage="No hay Registros" vflex="1"  mold="paging" pageSize="10">
 						<listhead>
 							<listheader label="Id" sort="auto" />
 							<listheader label="Nombre" sort="auto" />
 							<listheader label="Nit" sort="auto" />
 							<listheader label="Email" sort="auto" />
 							<listheader label="Telefono" sort="auto" />
+							<listheader label="Tipo" sort="auto" />
 							<listheader label="Estado" sort="auto" />
 							<listheader />
 						</listhead>
@@ -48,25 +49,37 @@
 					<div class="mb-3">
 						<label value="Nombre:"
 							class="infodigg-grid-title" />
-						<textbox id="text_nombre"
-							class="form-control" placeholder="Ejemplo: Juan Pérez" />
+						<textbox id="text_nombre" class="form-control"
+							placeholder="Ejemplo: Juan Pérez" />
 					</div>
 					<div class="mb-3">
 						<label value="Nit:" class="infodigg-grid-title" />
-						<textbox id="text_nit"
-							class="form-control" placeholder="Ejemplo: 123456789" />
+						<textbox id="text_nit" class="form-control"
+							placeholder="Ejemplo: 123456789" />
 					</div>
 					<div class="mb-3">
 						<label value="Email:"
 							class="infodigg-grid-title" />
-						<textbox id="text_email"
-							class="form-control" placeholder="Ejemplo: usuario@dominio.com" />
+						<textbox id="text_email" class="form-control"
+							placeholder="Ejemplo: usuario@dominio.com" />
 					</div>
 					<div class="mb-3">
 						<label value="Teléfono:"
 							class="infodigg-grid-title" />
-						<textbox id="text_telefono"
-							class="form-control" placeholder="Ejemplo: (999) 999-9999" />
+						<textbox id="text_telefono" class="form-control"
+							placeholder="Ejemplo: (999) 999-9999" />
+					</div>
+					<div class="mb-3">
+						<label value="tipo:"
+							class="infodigg-grid-title me-2" />
+						<combobox id="comb_tipo_proveedor">
+							<comboitem
+								label="${TipoProveedor.NATURAL.label}"
+								value="${TipoProveedor.NATURAL}" />
+							<comboitem
+								label="${TipoProveedor.JURIDICO.label}"
+								value="${TipoProveedor.JURIDICO}" />
+						</combobox>
 					</div>
 					<div sclass="text-end">
 						<button class="btn btn-primary"

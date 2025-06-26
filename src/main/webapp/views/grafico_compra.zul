@@ -1,0 +1,22 @@
+<zk>
+	<div hflex="1" vflex="1" apply="org.zkoss.bind.BindComposer"
+		viewModel="@id('vm') @init('com.italoweb.gestorfinan.controller.GraficoCompraController')">
+
+		<!-- Mostrar los gráficos lado a lado -->
+		<hlayout hflex="1" vflex="1">
+			<chartjs type="bar" title="Bar Chart"
+				data="@load(vm.categoryModel)" width="50%" height="400px" />
+
+			<vlayout>
+				<chartjs type="pie" title="Pie Chart"
+					data="@load(vm.categoryModel)" width="250px" height="250px" />
+				<chartjs type="doughnut" title="Doughnut Chart"
+					data="@load(vm.categoryModel)" width="250px" height="250px" />
+			</vlayout>
+		</hlayout>
+
+		<hlayout>
+			<button label="Reload" onClick="@command('load')" />
+		</hlayout>
+	</div>
+</zk>

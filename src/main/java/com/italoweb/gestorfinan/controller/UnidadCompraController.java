@@ -101,7 +101,7 @@ public class UnidadCompraController extends Window implements AfterCompose {
 	public void cargarWinUnidadCompraForm(UnidadCompra unidadCompra) {
 		this.text_nombre.setValue("");
 		if (unidadCompra != null) {
-			this.text_nombre.setValue(unidadCompra.getNombre());
+			this.text_nombre.setValue(unidadCompra.getNombre().toUpperCase());
 		}
 		this.win_unidad_compra_form.setAttribute("UNIDAD_COMPRA", unidadCompra);
 		this.win_unidad_compra_form.doModal();
@@ -116,10 +116,10 @@ public class UnidadCompraController extends Window implements AfterCompose {
 		String mensaje = "Unidad Guardada Exitosamente.";
 		if (unidadCompra == null) {
 			unidadCompra = new UnidadCompra();
-			unidadCompra.setNombre(nombre);
+			unidadCompra.setNombre(nombre.toUpperCase());
 			this.unidadCompraDAO.save(unidadCompra);
 		} else {
-			unidadCompra.setNombre(nombre);
+			unidadCompra.setNombre(nombre.toUpperCase());
 			this.unidadCompraDAO.update(unidadCompra);
 			mensaje = "Unidad Editada Exitosamente";
 		}

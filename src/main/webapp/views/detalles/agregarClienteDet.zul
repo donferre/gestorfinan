@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?taglib uri="http://www.zkoss.org/dsp/web/core" prefix="c"?>
-<zk>
+<zk xmlns="http://www.zkoss.org/2005/zul">
+	<zscript><![CDATA[
+	import com.italoweb.gestorfinan.model.TipoProveedor;
+]]></zscript>
 	<window id="win_cliente_form" title="Seleccionar Cliente"
 		border="normal" width="600px"
 		apply="com.italoweb.gestorfinan.controller.detalles.AgregarClienteController"
@@ -28,11 +31,23 @@
 					<textbox id="text_telefono_cliente"
 						class="form-control" placeholder="Ejemplo: (999) 999-9999" />
 				</div>
+				<div class="mb-3">
+					<label value="tipo:"
+						class="infodigg-grid-title me-2" />
+					<combobox id="comb_tipo_proveedor">
+						<comboitem
+							label="${TipoProveedor.NATURAL.label}"
+							value="${TipoProveedor.NATURAL}" />
+						<comboitem
+							label="${TipoProveedor.JURIDICO.label}"
+							value="${TipoProveedor.JURIDICO}" />
+					</combobox>
+				</div>
 				<div sclass="text-end">
 					<button class="btn btn-primary"
 						iconSclass="fa fa-floppy-o" label="Guardar"
 						id="guardarWinClienteForm" />
-					<button id="btnCancelar" label="Cancelar" />	
+					<button id="btnCancelar" label="Cancelar" />
 				</div>
 			</div>
 		</div>

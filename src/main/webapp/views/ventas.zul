@@ -35,11 +35,12 @@
 				<grid id="gridDetalle" width="100%">
 					<columns>
 						<column label="Código" />
-						<column label="Nombre Producto" />
-						<column label="Precio Venta" />
-						<column label="Cantidad" />
-						<column label="Impuesto (%)" />
-						<column label="Subtotal" />
+						<column label="Nombre" />
+						<column label="Vlr. Unitario" />
+						<column label="Cant" />
+						<column label="Impuesto(%)" />
+						<column label="Dcto" />
+						<column label="Vlr. Parcial" />
 						<column label="Acciones" />
 					</columns>
 					<rows id="rowsDetalle"></rows>
@@ -70,6 +71,9 @@
 				</grid>
 				<grid width="50%">
 					<rows id="rowsPorcentaje"></rows>
+				</grid>
+				<grid width="50%">
+					<rows id="rowsDescuento"></rows>
 				</grid>
 			</groupbox>
 			<groupbox mold="3d" width="100%">
@@ -104,8 +108,8 @@
 								<hbox spacing="5px" width="100%">
 									<label value="Valor a devolver:"
 										width="40%" />
-									<decimalbox
-										id="debx_efectivo_a_devolver" width="90%" readonly="true" />
+									<label id="debx_efectivo_a_devolver"
+										width="90%" value="$ 0.00" style="font-weight: bold" />
 								</hbox>
 							</vlayout>
 
@@ -125,6 +129,7 @@
 
 			<hbox spacing="20px" align="center" pack="end">
 				<button label="Procesar Venta" id="btnGuardarVenta" />
+			<button id="btnReimprimirFactura" label="Reimprimir Factura"/>
 			</hbox>
 		</vlayout>
 	</window>

@@ -87,7 +87,7 @@ public class LoginController extends Window implements AfterCompose {
 				new SesionUsuarioDAO().registrarInicioSesion(sesion);
 
 				// Redirigir
-				String bookmark = MenuModel.bookmarkUrl("/inicio.zul");
+				String bookmark = MenuModel.bookmarkUrl("/dashboard.zul");
 				Executions.sendRedirect("index.zul" + bookmark);
 			} else {
 				Messagebox.show("Contraseña incorrecta", "Error", Messagebox.OK, Messagebox.ERROR);

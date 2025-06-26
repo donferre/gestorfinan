@@ -26,7 +26,9 @@ public class SeleccionTab extends SelectorComposer<Component> {
     private static final Map<String, String> rutas = new HashMap<>();
 
     static {
-    	rutas.put("Parametros Generales", "parametrosGenerales");
+    	rutas.put("Descuento de Productos", "producto_descuento");
+    	rutas.put("Usuarios", "usuario");
+    	rutas.put("Roles", "rol");
     	rutas.put("Medios de Pago", "mediosPagos");
     	rutas.put("Unidad de Compra", "unidad_compra");
     	rutas.put("Categoria", "categoria");

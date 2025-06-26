@@ -8,6 +8,7 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.Locale;
 
@@ -54,6 +55,12 @@ public class FormatoUtil {
 
 	public static String formatearMoneda(BigDecimal valor) {
 		return valor != null ? FORMATO_MONEDA.format(valor) : "0.00";
+	}
+	
+	public static String convertirAStringLocal(LocalDate fecha) {
+	    if (fecha == null) return "";
+	    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+	    return fecha.format(formatter);
 	}
 
 	// --- PARSEADORES ---

@@ -46,12 +46,17 @@ public class SeleccionarProductoController extends GenericForwardComposer<Compon
 		if (tipo.equalsIgnoreCase("C")) {
 			lbl_desc.setVisible(true);
 			lbl_precio.setVisible(false);
-		} else {
+		} else if(tipo.equalsIgnoreCase("V")) {
 			lbl_desc.setVisible(false);
 			lbl_precio.setVisible(true);
 			lbl_inventario.setVisible(true);
+		}else if(tipo.equalsIgnoreCase("D")) {
+			lbl_desc.setVisible(false);
+			lbl_precio.setVisible(false);
+			lbl_inventario.setVisible(false);
 		}
 		win_seleccionar_producto.setWidth("800px");
+		win_seleccionar_producto.setHeight("800px");
 		this.text_filtrar_productos.setValue("");
 		stockDisponiblePorProducto = obtenerStockActualPorProducto();
 		cargarProductos();

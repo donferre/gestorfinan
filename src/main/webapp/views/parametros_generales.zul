@@ -1,0 +1,134 @@
+<?taglib uri="http://www.zkoss.org/dsp/web/core" prefix="c"?>
+<zk xmlns:h="http://www.zkoss.org/2005/zk/native"
+	xmlns:w="http://www.zkoss.org/2005/zk/client">
+	<div id="win_parametros_generales" sclass="container-fluid"
+		use="com.italoweb.gestorfinan.controller.ParametrosGeneralesController">
+		<style>
+			.div_list_parametros_generales{ height: calc(100vh - 260px);
+			} @media (max-width: 768px) { .z-window { width: 100%
+			!important; left: 0 !important; top: 50px !important; } }
+		</style>
+		<div class="mb-3">
+			<div sclass="mb-1">
+				<label sclass="h5" value="Parametros Generales"></label>
+			</div>
+			<vlayout>
+				<div class="input-group">
+					<textbox id="text_filtrar_parametros_generales"
+						class="form-control" placeholder="Buscar"
+						onChanging="win_parametros_generales.filtrarListParametrosGenerales(event.value)" />
+					<span class="input-group-btn">
+						<button iconSclass="z-icon-plus-circle"
+							class="btn btn-success" label="Crear" id="btnCrear"
+							onClick="win_parametros_generales.cargarWinParametrosGeneralesForm(null)" />
+					</span>
+				</div>
+				<div class="div_list_parametros_generales">
+					<listbox id="listbox_parametros_generales"
+						nonselectableTags="*" emptyMessage="No hay Registros" vflex="1">
+						<listhead>
+							<listheader label="Responsable de IVA"
+								sort="auto" />
+							<listheader label="Prefijo Dian"
+								id="lih_predian" sort="auto" />
+							<listheader label="Prefijo" id="lih_pref"
+								sort="auto" />
+							<listheader label="Consecutivo Dian"
+								id="lih_consdian" sort="auto" />
+							<listheader label="Consecutivo"
+								id="lih_cons" sort="auto" />
+							<listheader label="Habilita Precio Venta"
+								sort="auto" />
+							<listheader label="Habilita Descuento Total"
+								sort="auto" />
+							<listheader label="Tipo de factura"
+								sort="auto" />
+							<listheader />
+						</listhead>
+					</listbox>
+				</div>
+			</vlayout>
+		</div>
+		<window id="win_parametros_generales_form"
+			title="Parametros Generales" closable="true" width="30%"
+			visible="false"
+			onClose="win_parametros_generales_form.setVisible(false); event.stopPropagation();">
+			<div class="row justify-content-center">
+				<div class="z-grid-border-less">
+					<div class="mb-3">
+						<label value="Responsable de IVA:"
+							class="infodigg-grid-title me-2" />
+						<combobox id="comb_responsable_iva"
+							onSelect="win_parametros_generales.seleccionarEstado(event)">
+							<comboitem label="Sí" value="S" />
+							<comboitem label="No" value="N" />
+						</combobox>
+					</div>
+					<vlayout id="grupo_dian" sclass="mb-3"
+						visible="false">
+						<hbox>
+							<label value="Prefijo: "
+								class="infodigg-grid-title me-2" />
+							<textbox id="text_prefijo_dian"
+								class="form-control" />
+						</hbox>
+						<hbox>
+							<label value="Consecutivo: "
+								class="infodigg-grid-title me-2" />
+							<longbox id="long_consecutivo_dian"
+								class="form-control" />
+						</hbox>
+					</vlayout>
+
+					<vlayout id="grupo_sin_dian" sclass="mb-3"
+						visible="false">
+						<hbox>
+							<label value="Prefijo: "
+								class="infodigg-grid-title me-2" />
+							<textbox id="text_prefijo"
+								class="form-control" />
+						</hbox>
+						<hbox>
+							<label value="Consecutivo: "
+								class="infodigg-grid-title me-2" />
+							<longbox id="long_consecutivo"
+								class="form-control" />
+						</hbox>
+					</vlayout>
+					<div class="mb-3" >
+						<label value="Habilita precio venta:"
+							class="infodigg-grid-title me-2" />
+						<combobox id="comb_habilita_precio_venta"
+							onSelect="win_parametros_generales.seleccionarOpcion(event)">
+							<comboitem label="Sí" value="S" />
+							<comboitem label="No" value="N" />
+						</combobox>
+					</div>
+					<div class="mb-3" >
+						<label value="Habilita descuento total:"
+							class="infodigg-grid-title me-2" />
+						<combobox id="comb_habilita_descuento_total"
+							onSelect="win_parametros_generales.seleccionarOpcion(event)">
+							<comboitem label="Sí" value="S" />
+							<comboitem label="No" value="N" />
+						</combobox>
+					</div>
+					<div class="mb-3" >
+						<label value="Tipo de factura:"
+							class="infodigg-grid-title me-2" />
+						<combobox id="comb_tipo_factura"
+							onSelect="win_parametros_generales.seleccionarOpcion(event)">
+							<comboitem label="80mm" value="mm" />
+							<comboitem label="Media carta" value="mc" />
+						</combobox>
+					</div>
+					<div sclass="text-end">
+						<button class="btn btn-primary"
+							iconSclass="fa fa-floppy-o" label="Guardar"
+							onClick="win_parametros_generales.guardarWinParametrosGeneralesForm();" />
+					</div>
+				</div>
+			</div>
+		</window>
+	</div>
+</zk>

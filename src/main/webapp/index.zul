@@ -41,7 +41,7 @@
                 <div class="navbar navbar-expand px-3 border-bottom">
                     <div style="width: 50%;">
                         <a style="color: white; font-size: 22px;" class="header--nav-toggle" iconSclass="z-icon-bars" id="nav_toggle"></a>
-                        <label id="titulo" style="color: white; font-size: 18px; padding-left:8px;" value="Italo WEB."></label>
+                        <label id="titulo" style="color: white; font-size: 18px; padding-left:8px;" value="OAXIS."></label>
                     </div>
                     <div style="width: 50%;" class="d-flex justify-content-end">
                         <a id="btn_salir" style="color: white; font-size: 22px;" sclass="" iconSclass="fa fa-power-off" onClick="win_survey_pipe.salir()"></a>

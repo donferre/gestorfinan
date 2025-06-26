@@ -70,6 +70,31 @@ public class InventarioDAO extends GenericDAOImpl<Inventario, Long> {
 			this.save(movimiento);
 		}
 	}
+	
+	public void registrarMovimientoInventarioPorVenta(Ventas ventaGuardada, Session session) {
+	    List<VentaDetalle> detalles = ventaGuardada.getDetalles();
+	    Cliente cliente = ventaGuardada.getCliente();
+
+	    for (VentaDetalle detalle : detalles) {
+	        Producto producto = detalle.getProducto();
+	        producto.setPrecioCompra(detalle.getProducto().getPrecioCompra());
+	        producto.setPrecioVenta(detalle.getProducto().getPrecioVenta());
+
+	        session.merge(producto); 
+
+	        Inventario movimiento = new Inventario();
+	        movimiento.setProducto(detalle.getProducto());
+	        movimiento.setVenta(ventaGuardada);
+	        movimiento.getVenta().setCliente(cliente);
+	        movimiento.setCantidadStock(detalle.getCantidadVendidad());
+	        movimiento.setTipoMovimiento(TipoMovimiento.EGRESOS);
+	        movimiento.setFecha(LocalDateTime.now());
+	        movimiento.setObservaciones("Venta registrada #" + ventaGuardada.getId());
+
+	        session.persist(movimiento); 
+	    }
+	}
+
 
 	public List<InventarioResumenDTO> obtenerResumenInventario() {
 		try (Session session = HibernateUtil.getSessionFactory().openSession()) {

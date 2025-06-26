@@ -37,4 +37,10 @@ public class ParametrosGenerales {
 
 	@Column(name = "habilita_precio_venta",nullable = false, length = 1)
 	private String habilitaPrecioVenta;
+	
+	@Column(name = "habilita_descuento_total",nullable = false, length = 1)
+	private String habilitaDescuentoTotal;
+	
+	@Column(name = "tipo_factura",nullable = false, length = 2)
+	private String tipoFactura;
 }

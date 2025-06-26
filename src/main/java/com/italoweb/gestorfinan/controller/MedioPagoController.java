@@ -101,7 +101,7 @@ public class MedioPagoController extends Window implements AfterCompose {
 	public void cargarWinMedioPagoForm(MedioPago medioPago) {
 		this.text_nombre.setValue("");
 		if (medioPago != null) {
-			this.text_nombre.setValue(medioPago.getNombre());
+			this.text_nombre.setValue(medioPago.getNombre().toUpperCase());
 		}
 		this.win_medios_pagos_form.setAttribute("MEDIO_PAGO", medioPago);
 		this.win_medios_pagos_form.doModal();
@@ -116,10 +116,10 @@ public class MedioPagoController extends Window implements AfterCompose {
 		String mensaje = "Medio de pago Guardado Exitosamente.";
 		if (medioPago == null) {
 			medioPago = new MedioPago();
-			medioPago.setNombre(nombre);
+			medioPago.setNombre(nombre.toUpperCase());
 			this.mediosPagosDAO.save(medioPago);
 		} else {
-			medioPago.setNombre(nombre);
+			medioPago.setNombre(nombre.toUpperCase());
 			this.mediosPagosDAO.update(medioPago);
 			mensaje = "Medio de pago Editado Exitosamente";
 		}

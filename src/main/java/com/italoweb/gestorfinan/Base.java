@@ -31,6 +31,7 @@ import com.italoweb.gestorfinan.config.Apariencia;
 import com.italoweb.gestorfinan.config.AparienciaManager;
 import com.italoweb.gestorfinan.config.MenuManager;
 import com.italoweb.gestorfinan.controller.LoginController;
+import com.italoweb.gestorfinan.model.Roles;
 import com.italoweb.gestorfinan.model.Usuario;
 import com.italoweb.gestorfinan.navigation.EstadoMenu;
 import com.italoweb.gestorfinan.navigation.MenuItem;
@@ -219,8 +220,16 @@ public class Base extends Window implements AfterCompose {
         List<MenuItem> activeItems = new ArrayList<>();
         for (MenuItem item : items) {
             if (item.getStatus() != EstadoMenu.INACTIVO) {
-                item.setSubMenu(filterActiveMenuItems(item.getSubMenu())); //
-                activeItems.add(item);
+            	if (this.session() != null) {
+                	Roles rolSession = this.session().getRoles();
+                    if (item.getRoles() == null || item.getRoles().size() < 1 ||
+                        item.getRoles().stream().anyMatch(r -> r.getId().equals(rolSession.getId()))) {
+                        // Si item.getRoles() es null o contiene el rol, entra aquí
+                        item.setSubMenu(filterActiveMenuItems(item.getSubMenu())); //
+                        activeItems.add(item);
+                    }
+                    
+				}
             }
         }
         return activeItems;

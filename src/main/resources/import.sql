@@ -1,0 +1,3 @@
+INSERT INTO roles (id, nombre) SELECT 1, 'ADMIN' WHERE NOT EXISTS (SELECT 1 FROM roles WHERE id = 1);
+INSERT INTO usuarios (id_usuario, username, password, estado, descripcion, id_role) SELECT   1, 'admin', '827ccb0eea8a706c4c34a16891f84e7b', 0, 'Administrador', 1 WHERE NOT EXISTS ( SELECT 1 FROM usuarios WHERE username = 'admin');
+INSERT INTO tipo_proveedor (nombre,id, descripcion) SELECT   N, 1, 'NATURAL' WHERE NOT EXISTS ( SELECT 1 FROM tipo_proveedor WHERE nombre = 'NATURAL');

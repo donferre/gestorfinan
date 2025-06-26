@@ -11,7 +11,7 @@
 				placeholder="Buscar contenido aqui..." />
 		</div>
 
-		<listbox id="lstProductos" width="100%" height="300px">
+		<listbox id="lstProductos" width="100%" height="600px">
 			<listhead>
 				<listheader label="Código" />
 				<listheader label="Nombre" />

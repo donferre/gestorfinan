@@ -11,13 +11,13 @@ public class VentasDAO extends GenericDAOImpl<Ventas, Long> {
 		super(Ventas.class);
 	}
 
-	public String obtenerUltimaFactura() {
-		try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-			String sql = "SELECT factura FROM Ventas "
-					+ "ORDER BY LPAD(REGEXP_REPLACE(factura, '^[a-zA-Z. ]+', ''), 10, '0') DESC " + "LIMIT 1";
-			Query<String> query = session.createNativeQuery(sql, String.class);
+	public Ventas findByFacturaNumero(String numeroFactura) {
+		  try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+			Query<Ventas> query = session.createQuery(
+					"select v " + "from Ventas v " + "join fetch v.factura f " + "where f.numero = :num", Ventas.class);
+			query.setParameter("num", numeroFactura);
+			// uniqueResult() retorna la entidad o null si no hay coincidencia
 			return query.uniqueResult();
 		}
 	}
-
 }

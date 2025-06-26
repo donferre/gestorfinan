@@ -30,9 +30,8 @@ public class Proveedor {
 	@Column(name = "nit", nullable = false, unique = true)
 	private String nit;
 	
-	@ManyToOne(optional = false)
-	@JoinColumn(name = "tipo_proveedor_id", nullable = false)
-	private TipoProveedor tipoProveedor;
+	@Column(name = "tipo", nullable = false)
+	private TipoProveedor tipo;
 
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "ciudad_id", nullable = false) 

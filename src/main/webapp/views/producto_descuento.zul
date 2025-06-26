@@ -1,0 +1,53 @@
+<?page title="Pantalla de Descuentos" contentType="text/html;charset=UTF-8"?>
+<zk xmlns:n="native">
+  <window border="normal" width="100%" height="100%" apply="com.italoweb.gestorfinan.controller.ProductoDescuentoController">
+
+    <!-- Vlayout para el formulario -->
+    <vlayout spacing="10px" width="100%">
+      <groupbox mold="3d" width="100%">
+        <vlayout spacing="5px">
+          <hlayout spacing="10px">
+            <label value="Producto:" />
+            <combobox id="productoCmb" width="300px" autodrop="true" />
+            <button id="btnAgregarProducto" label="Agregar Producto" />
+          </hlayout>
+          <hlayout spacing="10px">
+            <label value="Descuento (%):" />
+            <decimalbox id="descuentoBox" format="##.##" width="100px" />
+          </hlayout>
+          <hlayout spacing="10px">
+            <label value="Fecha inicia:" />
+            <datebox id="fechaIniciaBox" format="yyyy-MM-dd" />
+          </hlayout>
+          <hlayout spacing="10px">
+            <label value="Fecha finaliza:" />
+            <datebox id="fechaFinalizaBox" format="yyyy-MM-dd" />
+          </hlayout>
+          <hlayout spacing="10px">
+            <button label="Guardar" id="guardarDescuento" />
+            <button label="Limpiar" id="limpiarCampos" />
+          </hlayout>
+        </vlayout>
+      </groupbox>
+    </vlayout>
+
+    <!-- Vlayout independiente para el grid -->
+    <vlayout width="100%" vflex="1">
+      <groupbox mold="3d" width="100%" vflex="1">
+        <grid id="descuentosGrid" width="100%" vflex="1">
+          <columns>
+            <column label="Producto" />
+            <column label="Descuento (%)" />
+            <column label="Inicia" />
+            <column label="Finaliza" />
+            <column label="Acción" />
+          </columns>
+          <rows id="descuentosRows">
+            <!-- dinámico -->
+          </rows>
+        </grid>
+      </groupbox>
+    </vlayout>
+
+  </window>
+</zk>
